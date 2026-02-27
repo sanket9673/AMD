@@ -12,17 +12,13 @@ class HardwareProfile:
         bandwidth_gbps: float,
         power_watts: float,
         architecture_type: str,
+        fp16_tflops: float = 0.0,
+        int8_tops: float = 0.0,
+        cost_per_hour: float = 0.0,
+        bandwidth_tbps: float = 0.0
     ):
         """
         Initialize an AMD Hardware Profile.
-        
-        Args:
-            name (str): Identifier for the hardware.
-            memory_gb (int): Total available memory in gigabytes.
-            compute_score (float): Theoretical peak performance metric (e.g., TFLOPS/TOPS).
-            bandwidth_gbps (float): Peak memory bandwidth in gigabytes per second.
-            power_watts (float): Thermal Design Power (TDP) in watts.
-            architecture_type (str): The underlying architecture (e.g., CDNA_3, XDNA).
         """
         self.name = name
         self.memory_gb = memory_gb
@@ -30,6 +26,22 @@ class HardwareProfile:
         self.bandwidth_gbps = bandwidth_gbps
         self.power_watts = power_watts
         self.architecture_type = architecture_type
+        
+        self.fp16_tflops = fp16_tflops
+        self.int8_tops = int8_tops
+        self.cost_per_hour = cost_per_hour
+        
+        # Populate tbps or gbps based on what was given
+        if bandwidth_tbps > 0 and bandwidth_gbps == 0:
+            self.bandwidth_tbps = bandwidth_tbps
+            self.bandwidth_gbps = bandwidth_tbps * 1000.0
+        else:
+            self.bandwidth_gbps = bandwidth_gbps
+            self.bandwidth_tbps = bandwidth_gbps / 1000.0 if bandwidth_gbps > 0 else 0.0
+            
+        # Default compute score fallback
+        if self.compute_score == 0 and self.fp16_tflops > 0:
+            self.compute_score = self.fp16_tflops
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert the profile to a dictionary format."""
@@ -38,46 +50,48 @@ class HardwareProfile:
             "memory_gb": self.memory_gb,
             "compute_score": self.compute_score,
             "bandwidth_gbps": self.bandwidth_gbps,
+            "bandwidth_tbps": self.bandwidth_tbps,
             "power_watts": self.power_watts,
             "architecture_type": self.architecture_type,
+            "fp16_tflops": self.fp16_tflops,
+            "int8_tops": self.int8_tops,
+            "cost_per_hour": self.cost_per_hour
         }
 
     def __repr__(self) -> str:
         return f"HardwareProfile(name={self.name}, architecture={self.architecture_type})"
 
 
-# Dictionary defining the 4 AMD hardware configurations with realistic scaling differences
+# Dictionary defining the AMD hardware configurations
 HARDWARE_DATABASE: Dict[str, HardwareProfile] = {
+    "AMD_MI250": HardwareProfile(
+        name="AMD_MI250",
+        memory_gb=128,
+        compute_score=383.0,
+        bandwidth_gbps=3200.0,
+        bandwidth_tbps=3.2,
+        power_watts=500.0,
+        architecture_type="CDNA_2",
+        fp16_tflops=383.0,
+        int8_tops=766.0,
+        cost_per_hour=3.5
+    ),
     "AMD_MI300X": HardwareProfile(
         name="AMD_MI300X",
         memory_gb=192,
-        compute_score=1300.0,  # ~1.3 PFLOPS (FP16/BF16 with sparsity)
-        bandwidth_gbps=5300.0, # 5.3 TB/s HBM3
+        compute_score=1307.0,
+        bandwidth_gbps=5300.0,
+        bandwidth_tbps=5.3,
         power_watts=750.0,
-        architecture_type="CDNA_3"
-    ),
-    "AMD_MI210": HardwareProfile(
-        name="AMD_MI210",
-        memory_gb=64,
-        compute_score=181.0,   # ~181 TFLOPS (FP16/BF16)
-        bandwidth_gbps=3200.0, # 3.2 TB/s HBM2e
-        power_watts=300.0,
-        architecture_type="CDNA_2"
-    ),
-    "AMD_Ryzen_AI_Edge": HardwareProfile(
-        name="AMD_Ryzen_AI_Edge",
-        memory_gb=32,          # Shared system memory typical for premium edge
-        compute_score=39.0,    # ~39 TOPS (XDNA NPU)
-        bandwidth_gbps=100.0,  # LPDDR5x bandwidth
-        power_watts=54.0,      # Typical APU TDP
-        architecture_type="XDNA"
-    ),
-    "AMD_Embedded_8GB": HardwareProfile(
-        name="AMD_Embedded_8GB",
-        memory_gb=8,           # Constrained embedded memory
-        compute_score=10.0,    # Generic compute score for embedded RDNA/Zen
-        bandwidth_gbps=64.0,   # Standard DDR4/LPDDR4 bandwidth
-        power_watts=15.0,      # Low-power embedded TDP
-        architecture_type="RDNA_3"
+        architecture_type="CDNA_3",
+        fp16_tflops=1307.0,
+        int8_tops=2600.0,
+        cost_per_hour=6.5
     )
 }
+
+def get_hardware_profile(name: str) -> HardwareProfile:
+    """Returns the requested hardware profile by name."""
+    if name in HARDWARE_DATABASE:
+        return HARDWARE_DATABASE[name]
+    raise ValueError(f"Hardware profile {name} not found.")
