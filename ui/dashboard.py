@@ -84,7 +84,7 @@ if "results" not in st.session_state:
 with st.sidebar:
     st.header("⚙️ Deployment Configuration")
     
-    models = ["TinyLlama/TinyLlama-1.1B-Chat-v1.0", "meta-llama/Llama-2-7b-chat-hf", "mistralai/Mistral-7B-v0.1"]
+    models = ["TinyLlama/TinyLlama-1.1B-Chat-v1.0", "mistralai/Mistral-7B-v0.1"]
     selected_model = st.selectbox("Model Architecture", models)
     
     # 1. Hardware Selector
