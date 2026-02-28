@@ -199,5 +199,5 @@ streamlit run ui/dashboard.py
 
 ## 👥 Team
 
-**Team Name:** Slingshot‑AI  
+**Team Name:** Last Minute Legends
 **Hackathon:** AMD Slingshot
