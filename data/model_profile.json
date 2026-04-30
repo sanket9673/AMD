@@ -1,9 +1,9 @@
 {
     "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    "total_parameters": 1034512384,
-    "trainable_parameters": 1034512384,
-    "estimated_memory_mb": 4122.3515625,
-    "estimated_flops": 1059340681216,
+    "total_parameters": 1261529088,
+    "trainable_parameters": 1261529088,
+    "estimated_memory_mb": 2582.17578125,
+    "estimated_flops": 2583611572224,
     "model_depth": 22,
     "hidden_size": 2048
 }

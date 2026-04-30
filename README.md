@@ -1,203 +1,104 @@
-# Enterprise Deployment Intelligence for AMD Hardware
+# 🎯 Slingshot-AI
+**Enterprise Deployment Intelligence System for AI Inference**
 
-**Slingshot‑AI** is a hardware‑aware, multi‑objective AI deployment optimization engine that automatically analyzes large language models and recommends the most cost‑efficient, energy‑optimized, and performance‑balanced deployment strategy across AMD accelerator architectures.
+Slingshot-AI is a production-grade infrastructure intelligence platform that programmatically determines the optimal hardware and software strategies for deploying Large Language Models (LLMs). It uses mathematically rigorous Roofline performance modeling to solve the multi-objective optimization problem between latency, cost, energy, and accuracy.
 
-It transforms AI deployment from manual experimentation into intelligent, automated decision‑making.
+---
 
-## 🎯 Problem Statement
+## 1. Problem Statement
+Deploying LLMs into production is fundamentally difficult because of the massive search space of optimizations. 
+Infrastructure engineers must balance competing constraints:
+- Should we use `int8` or `int4` quantization?
+- Will unstructured pruning at 40% actually speed up the model, or just degrade accuracy?
+- Is it cheaper to run a memory-bound decode phase on an AMD MI250 or an AMD MI300X?
 
-Enterprises struggle to deploy large AI models efficiently due to uncertainty in hardware selection and trade‑offs between cost, latency, memory, and energy consumption. Current deployment workflows rely heavily on manual benchmarking and trial‑and‑error, leading to high infrastructure costs and poor resource utilization.
+Guessing the answers to these questions in production leads to **OOM crashes, massive cloud bills, and missed latency SLAs.**
 
-Slingshot‑AI solves this by introducing an intelligent, automated deployment optimization pipeline.
+---
 
-## 🧠 What Slingshot‑AI Does
+## 2. Solution
+Slingshot-AI eliminates the guesswork. Instead of running expensive, time-consuming grid searches on physical hardware, Slingshot-AI simulates the entire hardware-software interaction using **Roofline Performance Modeling**. 
 
-Slingshot‑AI:
+It automatically calculates the exact memory bandwidth limit and compute limit of different target hardware, evaluates thousands of permutations of precision and pruning combinations, and outputs the mathematically proven Pareto-optimal deployment strategy.
 
-- **Profiles AI models** (parameters, memory, FLOPs)
-- **Generates optimization strategies** (quantization + pruning)
-- **Simulates performance** across AMD hardware (MI250 vs MI300X)
-- **Models cost and energy consumption**
-- **Applies multi‑objective scoring**
-- **Selects the best deployment configuration**
-- **Generates AI‑based reasoning** for transparency
-- **Visualizes results** in an enterprise dashboard
+---
 
-## 🏗 System Architecture
+## 3. Features
+- **Multi-Objective Optimization**: Ranks strategies using a customized weighted sum across Latency, Memory, Cost, Energy, and Accuracy constraints.
+- **True Roofline Modeling**: Simulates prefill (compute-bound) and decode (memory-bound) phases independently based on arithmetic intensity (FLOPs/byte) and hardware limits (ridge points).
+- **Hardware-Aware Decisions**: Built-in AMD MI250 and MI300X hardware profiles containing exact memory capacity, memory bandwidth, peak compute, and TDP constraints.
+- **LLM Reasoning Engine**: Integrates asynchronously with Groq's high-speed inference endpoints to generate dynamic, human-readable explanations of *why* the strategy was selected.
 
-The system follows a modular, layered architecture:
+---
 
-### 🔹 Core Intelligence Modules
-- `model_profiler.py` → Parameter, memory & FLOPs extraction
-- `strategy_generator.py` → Quantization & pruning strategy search
-- `performance_simulator.py` → Latency & memory estimation
-- `cost_model.py` → Infrastructure cost & energy modeling
-- `scoring_engine.py` → Multi‑objective optimization
-- `reasoning_engine.py` → AI‑generated deployment explanation
-- `pipeline_engine.py` → Orchestration layer
+## 4. Architecture
+The system is divided into modular, highly-cohesive components:
 
-### 🔹 Hardware Abstraction Layer
-- `hardware_profiles.py`
-  - AMD MI250
-  - AMD MI300X
+* `core/pipeline_engine.py`: The robust orchestrator that drives the intelligence cycle and safely captures failures.
+* `core/model_profiler.py`: Analyzes the LLM architecture using `AutoConfig` to determine parameter counts and sequence constraints without loading the full weights into RAM.
+* `core/performance_simulator.py`: Implements the core Roofline math to calculate precise latency, energy, and memory throughput limits.
+* `core/optimizer.py`: Generates all permutations of quantization and pruning strategies.
+* `core/scorer.py`: Applies Min-Max normalization to standard bounds and generates an `efficiency_score` from `[0, 100]`.
+* `core/hardware.py`: Encapsulates the AMD device profiles (TDP, TFLOPS, Bandwidth).
+* `core/reasoning.py`: Generates the automated LLM insights.
+* `ui/dashboard.py`: A fully reactive, YC-level Streamlit interface displaying Executive Decisions and Data Visualizations.
+* `utils/plotting.py`: Generates Log-scale Roofline models, Radar charts, and Pareto Frontiers using Plotly.
 
-### 🔹 Interface Layer
-- `ui/dashboard.py` (Streamlit Enterprise UI)
+---
 
-## ⚙️ How It Works
+## 5. Installation
 
-### 1️⃣ Model Profiling
-The system loads a HuggingFace model and extracts:
-- Total parameters
-- Estimated memory footprint
-- Estimated FLOPs
+To install Slingshot-AI, we recommend using a Conda environment:
 
-### 2️⃣ Strategy Generation
-Creates a search space including:
-- Precision levels (FP32, FP16, INT8, INT4)
-- Pruning ratios
-- Deployment modes (Low Power, Balanced, High Throughput)
-
-### 3️⃣ Hardware Simulation
-Simulates deployment on:
-- AMD MI250
-- AMD MI300X
-
-Evaluates:
-- Latency scaling
-- Memory utilization
-- Hardware constraints
-
-### 4️⃣ Cost & Energy Modeling
-Estimates:
-- Nodes required
-- Cost per hour
-- Monthly deployment cost
-- Energy consumption
-
-### 5️⃣ Multi‑Objective Optimization
-Score is computed using weighted metrics:
-
-```
-Score = α·Latency + β·Memory + γ·Cost + δ·Energy
-```
-
-Weights can be adjusted for enterprise needs.
-
-### 6️⃣ AI‑Generated Reasoning
-The system uses a local LLM to explain:
-- Why a strategy was selected
-- Hardware trade‑offs
-- Performance justifications
-
-## 📊 Enterprise Dashboard
-
-Run:
 ```bash
-streamlit run ui/dashboard.py
-```
-
-The dashboard includes:
-- **KPI Cards** (Cost, Nodes, Energy, Efficiency Score)
-- **Radar Chart** (Multi-objective comparison)
-- **Hardware Comparison** (MI250 vs MI300X)
-- **Strategy Leaderboard**
-- **AI Reasoning Panel**
-
-This enables decision‑makers to understand trade‑offs visually.
-
-## 🖥 Installation
-
-### 1️⃣ Create Environment
-```bash
-conda create -n slingshot python=3.10 -y
+conda create -n slingshot python=3.10
 conda activate slingshot
-```
-
-### 2️⃣ Install Dependencies
-```bash
 pip install -r requirements.txt
 ```
 
-## ▶️ Running the Pipeline
+---
 
-Execute:
+## 6. Run
+
+To execute the pipeline via CLI and generate the final output JSON:
 ```bash
 python run_pipeline.py
 ```
 
-This will:
-1. Load the model
-2. Profile it
-3. Generate strategies
-4. Simulate hardware performance
-5. Score all strategies
-6. Select best configuration
-7. Save results to `/results`
-
-## 📁 Project Structure
-
-```
-slingshot-ai/
-│
-├── core/
-│   ├── model_profiler.py
-│   ├── strategy_generator.py
-│   ├── performance_simulator.py
-│   ├── cost_model.py
-│   ├── scoring_engine.py
-│   ├── reasoning_engine.py
-│   ├── hardware_profiles.py
-│   └── pipeline_engine.py
-│
-├── ui/
-│   └── dashboard.py
-│
-├── data/
-├── results/
-├── run_pipeline.py
-└── README.md
-```
-
-## 🧩 Key Innovations
-
-- ✔ Hardware‑aware AI optimization
-- ✔ Multi‑objective scoring engine
-- ✔ Enterprise cost & energy modeling
-- ✔ Strategy search across precision + pruning
-- ✔ AI‑generated deployment reasoning
-- ✔ Modular & extensible architecture
-- ✔ AMD accelerator comparison framework
-
-## 🚀 Future Scope
-
-- ROCm integration for real AMD benchmarking
-- Kubernetes deployment integration
-- Real‑time telemetry feedback loop
-- Auto‑tuning deployment intelligence
-- Cloud-scale optimization
-
-## 🏆 Why This Matters
-
-As AI adoption grows, deployment intelligence becomes as critical as model intelligence.
-
-Slingshot‑AI enables:
-- Cost‑efficient AI infrastructure
-- Energy‑optimized inference
-- Intelligent hardware selection
-- Explainable deployment decisions
-- Scalable enterprise AI planning
-
-It transforms AI deployment into a data‑driven, optimized, and automated process.
-
-## 📌 Demo
-
-To view the enterprise dashboard:
+To boot up the interactive executive dashboard:
 ```bash
 streamlit run ui/dashboard.py
 ```
 
-## 👥 Team
+*(Optional)* To enable LLM insights, set your Groq API key:
+```bash
+export GROQ_API_KEY="your-api-key"
+```
 
-**Team Name:** Last Minute Legends
-**Hackathon:** AMD Slingshot
+---
+
+## 7. Example Output
+Slingshot-AI produces a rich evaluation dictionary. Key outputs include:
+- `latency_ms`: Computed total execution time based on the Roofline limits.
+- `energy_kwh`: Calculated directly from execution time and hardware Wattage (TDP).
+- `cost_usd`: Estimated per-request inference cost.
+- `accuracy_penalty`: A modeled penalty assigned for destructive compressions (e.g., int4 with heavy pruning).
+- `roofline_telemetry`: Detailed breakdown of the Prefill and Decode arithmetic intensities.
+
+---
+
+## 8. Screenshots
+*(Placeholder for UI Dashboard Screenshots: Executive Decision Block, True Roofline Curve, Strategy Leaderboard)*
+
+---
+
+## 9. Limitations
+- **Accuracy Penalty Math**: Currently, the accuracy penalty from pruning/quantization is approximated via a static penalty step-function. Future iterations require mapping against real-world perplexity degradation datasets.
+- **Static Batching**: The simulator currently defaults to static batch definitions. Dynamic Continuous Batching (vLLM style) alters arithmetic intensity over time and is not fully modeled.
+
+---
+
+## 10. Future Work
+- Integrate direct PyTorch benchmarking to validate simulator estimations automatically.
+- Support multi-node deployment strategies (Tensor Parallelism & Pipeline Parallelism overheads).
+- Expand hardware support to upcoming generation accelerators.

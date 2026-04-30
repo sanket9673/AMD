@@ -1,194 +1,824 @@
 {
+    "model_id": "meta-llama/Llama-2-7b-chat-hf",
     "best_strategy": {
-        "precision": "int4",
-        "prune_ratio": 0.65,
-        "expected_memory_multiplier": 0.0475,
-        "expected_latency_multiplier": 0.20579999999999998,
+        "precision": "int8",
+        "prune_ratio": 0.2,
+        "expected_memory_multiplier": 0.2,
+        "expected_latency_multiplier": 0.36000000000000004,
         "deployment_mode": "balanced"
+    },
+    "best_evaluation": {
+        "strategy": {
+            "precision": "int8",
+            "prune_ratio": 0.2,
+            "expected_memory_multiplier": 0.2,
+            "expected_latency_multiplier": 0.36000000000000004,
+            "deployment_mode": "balanced"
+        },
+        "hardware": "AMD_MI300X",
+        "simulation": {
+            "memory_mb": 1218.4703125,
+            "latency_ms": 98.3851049550946,
+            "throughput": 10.16414019638872,
+            "energy_kwh": 2.0496896865644707e-05,
+            "hardware_fit_score": 100.0,
+            "cost_usd": 0.00017763977283558746,
+            "roofline_info": "AI: 1147.23 (P), 2.25 (D) | Ridge: 246.60",
+            "roofline_telemetry": {
+                "bandwidth": 5300000000000.0,
+                "compute": 1307000000000000.0,
+                "ridge": 246.60377358490567,
+                "prefill_ai": 1147.2321349756928,
+                "prefill_perf": 1307000000000000.0,
+                "decode_ai": 2.24998173659791,
+                "decode_perf": 11924903203968.922
+            },
+            "accuracy_penalty": 0.15000000000000002
+        },
+        "scoring_breakdown": {
+            "efficiency_score": 89.16663540192661,
+            "latency_score": 80.32297900898108,
+            "cost_score": 99.99822360227164,
+            "energy_score": 99.99959006206268,
+            "accuracy_score": 85.0,
+            "memory_score": 92.38456054687501,
+            "reasoning": "The selected int8 strategy on AMD_MI300X was chosen because it optimally balances latency (98.4ms) and infrastructure cost while staying within memory bounds. Note: An estimated accuracy degradation penalty of 15% is factored into the efficiency score."
+        },
+        "score": 89.16663540192661,
+        "reasoning": "The selected int8 strategy on AMD_MI300X was chosen because it optimally balances latency (98.4ms) and infrastructure cost while staying within memory bounds. Note: An estimated accuracy degradation penalty of 15% is factored into the efficiency score."
     },
     "hardware_comparison": [
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.65,
-                "expected_memory_multiplier": 0.0475,
-                "expected_latency_multiplier": 0.20579999999999998,
+                "precision": "int8",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.36000000000000004,
                 "deployment_mode": "balanced"
             },
-            "latency_estimate": 0.08105353846153845,
-            "throughput_estimate": 12.337524295432459,
-            "energy_consumption": 60.79015384615384,
-            "cost_estimate": 0.0001483730051282051,
-            "adjusted_memory": 197.81169921875,
-            "hardware_fit_score": 100.0,
-            "score": 100.0
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.3851049550946,
+                "throughput": 10.16414019638872,
+                "energy_kwh": 2.0496896865644707e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00017763977283558746,
+                "roofline_info": "AI: 1147.23 (P), 2.25 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1147.2321349756928,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 2.24998173659791,
+                    "decode_perf": 11924903203968.922
+                },
+                "accuracy_penalty": 0.15000000000000002
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 89.16663540192661,
+                "latency_score": 80.32297900898108,
+                "cost_score": 99.99822360227164,
+                "energy_score": 99.99959006206268,
+                "accuracy_score": 85.0,
+                "memory_score": 92.38456054687501,
+                "reasoning": "The selected int8 strategy on AMD_MI300X was chosen because it optimally balances latency (98.4ms) and infrastructure cost while staying within memory bounds. Note: An estimated accuracy degradation penalty of 15% is factored into the efficiency score."
+            },
+            "score": 89.16663540192661,
+            "reasoning": "The selected int8 strategy on AMD_MI300X was chosen because it optimally balances latency (98.4ms) and infrastructure cost while staying within memory bounds. Note: An estimated accuracy degradation penalty of 15% is factored into the efficiency score."
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.65,
-                "expected_memory_multiplier": 0.0475,
-                "expected_latency_multiplier": 0.20579999999999998,
+                "precision": "int8",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.36000000000000004,
                 "deployment_mode": "high_performance"
             },
-            "latency_estimate": 0.08105353846153845,
-            "throughput_estimate": 12.337524295432459,
-            "energy_consumption": 60.79015384615384,
-            "cost_estimate": 0.0001483730051282051,
-            "adjusted_memory": 197.81169921875,
-            "hardware_fit_score": 100.0,
-            "score": 100.0
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.3851049550946,
+                "throughput": 10.16414019638872,
+                "energy_kwh": 2.0496896865644707e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00017763977283558746,
+                "roofline_info": "AI: 1147.23 (P), 2.25 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1147.2321349756928,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 2.24998173659791,
+                    "decode_perf": 11924903203968.922
+                },
+                "accuracy_penalty": 0.15000000000000002
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 89.16663540192661,
+                "latency_score": 80.32297900898108,
+                "cost_score": 99.99822360227164,
+                "energy_score": 99.99959006206268,
+                "accuracy_score": 85.0,
+                "memory_score": 92.38456054687501
+            },
+            "score": 89.16663540192661
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.65,
-                "expected_memory_multiplier": 0.0475,
-                "expected_latency_multiplier": 0.20579999999999998,
+                "precision": "int8",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.36000000000000004,
                 "deployment_mode": "low_power"
             },
-            "latency_estimate": 0.08105353846153845,
-            "throughput_estimate": 12.337524295432459,
-            "energy_consumption": 60.79015384615384,
-            "cost_estimate": 0.0001483730051282051,
-            "adjusted_memory": 197.81169921875,
-            "hardware_fit_score": 100.0,
-            "score": 100.0
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.3851049550946,
+                "throughput": 10.16414019638872,
+                "energy_kwh": 2.0496896865644707e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00017763977283558746,
+                "roofline_info": "AI: 1147.23 (P), 2.25 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1147.2321349756928,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 2.24998173659791,
+                    "decode_perf": 11924903203968.922
+                },
+                "accuracy_penalty": 0.15000000000000002
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 89.16663540192661,
+                "latency_score": 80.32297900898108,
+                "cost_score": 99.99822360227164,
+                "energy_score": 99.99959006206268,
+                "accuracy_score": 85.0,
+                "memory_score": 92.38456054687501
+            },
+            "score": 89.16663540192661
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "precision": "int8",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.25,
+                "expected_latency_multiplier": 0.4,
                 "deployment_mode": "balanced"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1459.087890625,
+                "latency_ms": 122.85763650675081,
+                "throughput": 8.139502178564634,
+                "energy_kwh": 2.5595340938906418e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00022182628813718897,
+                "roofline_info": "AI: 1020.61 (P), 2.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1020.6067093938958,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.999987012670763,
+                    "decode_perf": 10599931167155.045
+                },
+                "accuracy_penalty": 0.1
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 88.9887631822091,
+                "latency_score": 75.42847269864984,
+                "cost_score": 99.99778173711863,
+                "energy_score": 99.99948809318123,
+                "accuracy_score": 90.0,
+                "memory_score": 90.88070068359374
+            },
+            "score": 88.9887631822091
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "precision": "int8",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.25,
+                "expected_latency_multiplier": 0.4,
                 "deployment_mode": "high_performance"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1459.087890625,
+                "latency_ms": 122.85763650675081,
+                "throughput": 8.139502178564634,
+                "energy_kwh": 2.5595340938906418e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00022182628813718897,
+                "roofline_info": "AI: 1020.61 (P), 2.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1020.6067093938958,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.999987012670763,
+                    "decode_perf": 10599931167155.045
+                },
+                "accuracy_penalty": 0.1
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 88.9887631822091,
+                "latency_score": 75.42847269864984,
+                "cost_score": 99.99778173711863,
+                "energy_score": 99.99948809318123,
+                "accuracy_score": 90.0,
+                "memory_score": 90.88070068359374
+            },
+            "score": 88.9887631822091
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "precision": "int8",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.25,
+                "expected_latency_multiplier": 0.4,
                 "deployment_mode": "low_power"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1459.087890625,
+                "latency_ms": 122.85763650675081,
+                "throughput": 8.139502178564634,
+                "energy_kwh": 2.5595340938906418e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00022182628813718897,
+                "roofline_info": "AI: 1020.61 (P), 2.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1020.6067093938958,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.999987012670763,
+                    "decode_perf": 10599931167155.045
+                },
+                "accuracy_penalty": 0.1
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 88.9887631822091,
+                "latency_score": 75.42847269864984,
+                "cost_score": 99.99778173711863,
+                "energy_score": 99.99948809318123,
+                "accuracy_score": 90.0,
+                "memory_score": 90.88070068359374
+            },
+            "score": 88.9887631822091
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
+                "precision": "int8",
                 "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "expected_memory_multiplier": 0.1,
+                "expected_latency_multiplier": 0.27999999999999997,
                 "deployment_mode": "balanced"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 737.23515625,
+                "latency_ms": 49.44004185178219,
+                "throughput": 20.22652009474285,
+                "energy_kwh": 1.030000871912129e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 8.92667422323845e-05,
+                "roofline_info": "AI: 1777.23 (P), 3.50 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1777.227780988921,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.499943180988033,
+                    "decode_perf": 18549698859236.574
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.67719155684284,
+                "latency_score": 90.11199162964357,
+                "cost_score": 99.99910733257768,
+                "energy_score": 99.99979399982561,
+                "accuracy_score": 65.0,
+                "memory_score": 95.3922802734375
+            },
+            "score": 86.67719155684284
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
+                "precision": "int8",
                 "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "expected_memory_multiplier": 0.1,
+                "expected_latency_multiplier": 0.27999999999999997,
                 "deployment_mode": "high_performance"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 737.23515625,
+                "latency_ms": 49.44004185178219,
+                "throughput": 20.22652009474285,
+                "energy_kwh": 1.030000871912129e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 8.92667422323845e-05,
+                "roofline_info": "AI: 1777.23 (P), 3.50 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1777.227780988921,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.499943180988033,
+                    "decode_perf": 18549698859236.574
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.67719155684284,
+                "latency_score": 90.11199162964357,
+                "cost_score": 99.99910733257768,
+                "energy_score": 99.99979399982561,
+                "accuracy_score": 65.0,
+                "memory_score": 95.3922802734375
+            },
+            "score": 86.67719155684284
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
+                "precision": "int8",
                 "prune_ratio": 0.6,
-                "expected_memory_multiplier": 0.05,
-                "expected_latency_multiplier": 0.21,
+                "expected_memory_multiplier": 0.1,
+                "expected_latency_multiplier": 0.27999999999999997,
                 "deployment_mode": "low_power"
             },
-            "latency_estimate": 0.0827076923076923,
-            "throughput_estimate": 12.09077380952381,
-            "energy_consumption": 62.030769230769224,
-            "cost_estimate": 0.00015140102564102563,
-            "adjusted_memory": 208.11757812500002,
-            "hardware_fit_score": 100.0,
-            "score": 99.81967588926189
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 737.23515625,
+                "latency_ms": 49.44004185178219,
+                "throughput": 20.22652009474285,
+                "energy_kwh": 1.030000871912129e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 8.92667422323845e-05,
+                "roofline_info": "AI: 1777.23 (P), 3.50 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 1777.227780988921,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.499943180988033,
+                    "decode_perf": 18549698859236.574
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.67719155684284,
+                "latency_score": 90.11199162964357,
+                "cost_score": 99.99910733257768,
+                "energy_score": 99.99979399982561,
+                "accuracy_score": 65.0,
+                "memory_score": 95.3922802734375
+            },
+            "score": 86.67719155684284
         },
         {
-            "hardware": "AMD_MI300X",
             "strategy": {
-                "precision": "int4",
-                "prune_ratio": 0.45,
-                "expected_memory_multiplier": 0.07125,
-                "expected_latency_multiplier": 0.2352,
+                "precision": "fp16",
+                "prune_ratio": 0.6,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.42,
                 "deployment_mode": "balanced"
             },
-            "latency_estimate": 0.09263261538461538,
-            "throughput_estimate": 10.795333758503402,
-            "energy_consumption": 69.47446153846154,
-            "cost_estimate": 0.0001695691487179487,
-            "adjusted_memory": 295.71754882812496,
-            "hardware_fit_score": 100.0,
-            "score": 98.73773122483317
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.18743000695198,
+                "throughput": 10.184603058957718,
+                "energy_kwh": 2.0455714584781667e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0001772828597347744,
+                "roofline_info": "AI: 892.29 (P), 1.75 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 892.2916605366498,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.7499857951317073,
+                    "decode_perf": 9274924714198.049
+                },
+                "accuracy_penalty": 0.25
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.33335824725015,
+                "latency_score": 80.36251399860961,
+                "cost_score": 99.99822717140265,
+                "energy_score": 99.9995908857083,
+                "accuracy_score": 75.0,
+                "memory_score": 92.38456054687501
+            },
+            "score": 86.33335824725015
+        },
+        {
+            "strategy": {
+                "precision": "fp16",
+                "prune_ratio": 0.6,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.42,
+                "deployment_mode": "high_performance"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.18743000695198,
+                "throughput": 10.184603058957718,
+                "energy_kwh": 2.0455714584781667e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0001772828597347744,
+                "roofline_info": "AI: 892.29 (P), 1.75 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 892.2916605366498,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.7499857951317073,
+                    "decode_perf": 9274924714198.049
+                },
+                "accuracy_penalty": 0.25
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.33335824725015,
+                "latency_score": 80.36251399860961,
+                "cost_score": 99.99822717140265,
+                "energy_score": 99.9995908857083,
+                "accuracy_score": 75.0,
+                "memory_score": 92.38456054687501
+            },
+            "score": 86.33335824725015
+        },
+        {
+            "strategy": {
+                "precision": "fp16",
+                "prune_ratio": 0.6,
+                "expected_memory_multiplier": 0.2,
+                "expected_latency_multiplier": 0.42,
+                "deployment_mode": "low_power"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 1218.4703125,
+                "latency_ms": 98.18743000695198,
+                "throughput": 10.184603058957718,
+                "energy_kwh": 2.0455714584781667e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0001772828597347744,
+                "roofline_info": "AI: 892.29 (P), 1.75 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 892.2916605366498,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.7499857951317073,
+                    "decode_perf": 9274924714198.049
+                },
+                "accuracy_penalty": 0.25
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 86.33335824725015,
+                "latency_score": 80.36251399860961,
+                "cost_score": 99.99822717140265,
+                "energy_score": 99.9995908857083,
+                "accuracy_score": 75.0,
+                "memory_score": 92.38456054687501
+            },
+            "score": 86.33335824725015
+        },
+        {
+            "strategy": {
+                "precision": "int4",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.125,
+                "expected_latency_multiplier": 0.3,
+                "deployment_mode": "balanced"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 857.5439453125,
+                "latency_ms": 61.92340131278855,
+                "throughput": 16.148983725050613,
+                "energy_kwh": 1.2900708606830948e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00011180614125920155,
+                "roofline_info": "AI: 2034.47 (P), 4.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 2034.4716672284248,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.9999480510203917,
+                    "decode_perf": 21199724670408.08
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.86206946355144,
+                "latency_score": 87.61531973744229,
+                "cost_score": 99.9988819385874,
+                "energy_score": 99.99974198582787,
+                "accuracy_score": 65.0,
+                "memory_score": 94.64035034179688
+            },
+            "score": 85.86206946355144
+        },
+        {
+            "strategy": {
+                "precision": "int4",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.125,
+                "expected_latency_multiplier": 0.3,
+                "deployment_mode": "high_performance"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 857.5439453125,
+                "latency_ms": 61.92340131278855,
+                "throughput": 16.148983725050613,
+                "energy_kwh": 1.2900708606830948e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00011180614125920155,
+                "roofline_info": "AI: 2034.47 (P), 4.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 2034.4716672284248,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.9999480510203917,
+                    "decode_perf": 21199724670408.08
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.86206946355144,
+                "latency_score": 87.61531973744229,
+                "cost_score": 99.9988819385874,
+                "energy_score": 99.99974198582787,
+                "accuracy_score": 65.0,
+                "memory_score": 94.64035034179688
+            },
+            "score": 85.86206946355144
+        },
+        {
+            "strategy": {
+                "precision": "int4",
+                "prune_ratio": 0.0,
+                "expected_memory_multiplier": 0.125,
+                "expected_latency_multiplier": 0.3,
+                "deployment_mode": "low_power"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 857.5439453125,
+                "latency_ms": 61.92340131278855,
+                "throughput": 16.148983725050613,
+                "energy_kwh": 1.2900708606830948e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.00011180614125920155,
+                "roofline_info": "AI: 2034.47 (P), 4.00 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 2034.4716672284248,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 3.9999480510203917,
+                    "decode_perf": 21199724670408.08
+                },
+                "accuracy_penalty": 0.35
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.86206946355144,
+                "latency_score": 87.61531973744229,
+                "cost_score": 99.9988819385874,
+                "energy_score": 99.99974198582787,
+                "accuracy_score": 65.0,
+                "memory_score": 94.64035034179688
+            },
+            "score": 85.86206946355144
+        },
+        {
+            "strategy": {
+                "precision": "fp16",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.4,
+                "expected_latency_multiplier": 0.54,
+                "deployment_mode": "balanced"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 2180.940625,
+                "latency_ms": 195.87988126543425,
+                "throughput": 5.10516952297369,
+                "energy_kwh": 4.0808308596965466e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0003536720078403674,
+                "roofline_info": "AI: 574.81 (P), 1.12 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 574.8055619907948,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.1249954341309467,
+                    "decode_perf": 5962475800894.018
+                },
+                "accuracy_penalty": 0.05
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.6337804982224,
+                "latency_score": 60.82402374691315,
+                "cost_score": 99.9964632799216,
+                "energy_score": 99.99918383382807,
+                "accuracy_score": 95.0,
+                "memory_score": 86.36912109375
+            },
+            "score": 85.6337804982224
+        },
+        {
+            "strategy": {
+                "precision": "fp16",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.4,
+                "expected_latency_multiplier": 0.54,
+                "deployment_mode": "high_performance"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 2180.940625,
+                "latency_ms": 195.87988126543425,
+                "throughput": 5.10516952297369,
+                "energy_kwh": 4.0808308596965466e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0003536720078403674,
+                "roofline_info": "AI: 574.81 (P), 1.12 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 574.8055619907948,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.1249954341309467,
+                    "decode_perf": 5962475800894.018
+                },
+                "accuracy_penalty": 0.05
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.6337804982224,
+                "latency_score": 60.82402374691315,
+                "cost_score": 99.9964632799216,
+                "energy_score": 99.99918383382807,
+                "accuracy_score": 95.0,
+                "memory_score": 86.36912109375
+            },
+            "score": 85.6337804982224
+        },
+        {
+            "strategy": {
+                "precision": "fp16",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.4,
+                "expected_latency_multiplier": 0.54,
+                "deployment_mode": "low_power"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 2180.940625,
+                "latency_ms": 195.87988126543425,
+                "throughput": 5.10516952297369,
+                "energy_kwh": 4.0808308596965466e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 0.0003536720078403674,
+                "roofline_info": "AI: 574.81 (P), 1.12 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 574.8055619907948,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 1.1249954341309467,
+                    "decode_perf": 5962475800894.018
+                },
+                "accuracy_penalty": 0.05
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.6337804982224,
+                "latency_score": 60.82402374691315,
+                "cost_score": 99.9964632799216,
+                "energy_score": 99.99918383382807,
+                "accuracy_score": 95.0,
+                "memory_score": 86.36912109375
+            },
+            "score": 85.6337804982224
+        },
+        {
+            "strategy": {
+                "precision": "int4",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.1,
+                "expected_latency_multiplier": 0.27,
+                "deployment_mode": "balanced"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 737.23515625,
+                "latency_ms": 49.637716799924796,
+                "throughput": 20.14597093638914,
+                "energy_kwh": 1.0341190999984332e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 8.962365533319756e-05,
+                "roofline_info": "AI: 2285.01 (P), 4.50 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 2285.0071469857558,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 4.499926946984615,
+                    "decode_perf": 23849612819018.457
+                },
+                "accuracy_penalty": 0.39999999999999997
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.2426862847411,
+                "latency_score": 90.07245664001505,
+                "cost_score": 99.99910376344667,
+                "energy_score": 99.99979317617999,
+                "accuracy_score": 60.00000000000001,
+                "memory_score": 95.3922802734375
+            },
+            "score": 85.2426862847411
+        },
+        {
+            "strategy": {
+                "precision": "int4",
+                "prune_ratio": 0.2,
+                "expected_memory_multiplier": 0.1,
+                "expected_latency_multiplier": 0.27,
+                "deployment_mode": "high_performance"
+            },
+            "hardware": "AMD_MI300X",
+            "simulation": {
+                "memory_mb": 737.23515625,
+                "latency_ms": 49.637716799924796,
+                "throughput": 20.14597093638914,
+                "energy_kwh": 1.0341190999984332e-05,
+                "hardware_fit_score": 100.0,
+                "cost_usd": 8.962365533319756e-05,
+                "roofline_info": "AI: 2285.01 (P), 4.50 (D) | Ridge: 246.60",
+                "roofline_telemetry": {
+                    "bandwidth": 5300000000000.0,
+                    "compute": 1307000000000000.0,
+                    "ridge": 246.60377358490567,
+                    "prefill_ai": 2285.0071469857558,
+                    "prefill_perf": 1307000000000000.0,
+                    "decode_ai": 4.499926946984615,
+                    "decode_perf": 23849612819018.457
+                },
+                "accuracy_penalty": 0.39999999999999997
+            },
+            "scoring_breakdown": {
+                "efficiency_score": 85.2426862847411,
+                "latency_score": 90.07245664001505,
+                "cost_score": 99.99910376344667,
+                "energy_score": 99.99979317617999,
+                "accuracy_score": 60.00000000000001,
+                "memory_score": 95.3922802734375
+            },
+            "score": 85.2426862847411
         }
     ],
     "scoring_breakdown": {
-        "score": 100.0,
-        "hardware_fit_score": 100.0,
-        "reasoning": "Deployment Strategy Metrics:\n\nWhy This Strategy Was Selected as the Best:\nThe deployment strategy we chose for our AI project is based on the metrics provided in the given material. The Precision metric indicates that the model has high accuracy and precision, which is essential for our project's goals. The Prune Ratio metric shows that we have optimized the model by removing unnecessary layers to reduce the model size without sacrificing performance. The Mode metric indicates that the model is balanced, meaning that it has equal weights for all classes. The Hardware metric shows that we used an AMD_MI300X processor with a balance of resources, including memory, processing power, and energy consumption. Finally, the Latency metric shows that the model runs quickly and efficiently, meeting our project's requirements.\n\nHardware Tradeoffs Considered:\nThe deployment strategy we chose for our AI project involves using an AMD_MI300X processor with balanced resources. This ensures that the model runs efficiently and meets our project's requirements. The processor's balance of resources allows us to optimize the model while maintaining its performance. Additionally, the processor's processing power and energy consumption help ensure that the model runs smoothly and efficiently.\n\nCost Implications:\nThe deployment strategy we chose for our AI project involves using an AMD_MI300X processor with balanced resources. This means that we will not be incurring additional costs related to purchasing or upgrading additional hardware. Instead, we will only need to pay for the cost of the processor itself.\n\nFuture Scaling Suggestions:\nWe plan to continue optimizing our AI model by reducing the number of layers and increasing the number of neurons in each layer. We also plan to use more advanced techniques such as dropout and regularization to improve the model's performance. In addition, we may consider using GPUs for faster training and inference times. However, we will first conduct further research and testing to determine if these strategies are feasible and effective.\n\nConclusion:\nIn summary, our deployment strategy for our AI project is based on the metrics provided in the given material. By selecting an AMD_MI300X processor with balanced resources, we have optimized the model while minimizing hardware costs. We plan to continue improving the model by reducing the number of layers and increasing the number of"
-    },
-    "cost_analysis": {
-        "per_inference_cost": 0.0001483730051282051,
-        "recommended_hardware": "AMD_MI300X"
-    },
-    "energy_analysis": {
-        "energy_consumed_wh": 60.79015384615384
+        "efficiency_score": 89.16663540192661,
+        "latency_score": 80.32297900898108,
+        "cost_score": 99.99822360227164,
+        "energy_score": 99.99959006206268,
+        "accuracy_score": 85.0,
+        "memory_score": 92.38456054687501,
+        "reasoning": "The selected int8 strategy on AMD_MI300X was chosen because it optimally balances latency (98.4ms) and infrastructure cost while staying within memory bounds. Note: An estimated accuracy degradation penalty of 15% is factored into the efficiency score."
     },
     "workload_type": "chat_inference"
 }
