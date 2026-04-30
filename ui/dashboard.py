@@ -5,7 +5,13 @@ import os
 import logging
 import warnings
 import random
-from dotenv import load_dotenv
+
+# Phase 2: Fix dotenv import crash
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Suppress loud HTTP logs
 logging.getLogger("transformers").setLevel(logging.ERROR)
@@ -35,10 +41,30 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Production Safe ENV Handling (Phase 3)
+try:
+    st_secrets_hf = st.secrets.get("HF_TOKEN", None)
+except Exception:
+    st_secrets_hf = None
+    
+try:
+    st_secrets_groq = st.secrets.get("GROQ_API_KEY", None)
+except Exception:
+    st_secrets_groq = None
+
+HF_TOKEN = os.getenv("HF_TOKEN") or st_secrets_hf
+GROQ_API_KEY = os.getenv("GROQ_API_KEY") or st_secrets_groq
+
+# Handle missing API Keys Safely (Phase 4)
+if GROQ_API_KEY is None:
+    USE_LLM = False
+else:
+    USE_LLM = True
+
 # Cold Start Optimization
 if "initialized" not in st.session_state:
     st.session_state["initialized"] = True
-    st.info("Initializing system... please wait (first load only)")
+    st.info("Initializing system... please wait")
 
 # Cache Model Loading
 @st.cache_resource
@@ -76,6 +102,57 @@ def percent_improvement(base: float, opt: float) -> float:
         return 0.0
     return max(0.0, ((base - opt) / base) * 100)
 
+def generate_demo_results(selected_model, selected_hardware):
+    # Realistic Synthetic Spread for Demo
+    lat_base = random.uniform(150, 300)
+    cost_base = random.uniform(0.0004, 0.0008)
+    eng_base = random.uniform(0.00004, 0.00008)
+    
+    lat_opt = lat_base * random.uniform(0.3, 0.6)
+    cost_opt = cost_base * random.uniform(0.3, 0.6)
+    eng_opt = eng_base * random.uniform(0.3, 0.6)
+    
+    hw_comp = []
+    for i in range(20):
+        hw_comp.append({
+            "strategy": {"precision": random.choice(["fp32", "fp16", "int8", "int4"]), "prune_ratio": random.choice([0.0, 0.2, 0.4, 0.6]), "deployment_mode": "balanced"},
+            "hardware": random.choice(["AMD_MI250", "AMD_MI300X"]),
+            "simulation": {
+                "latency_ms": lat_base * random.uniform(0.3, 1.5),
+                "memory_mb": random.uniform(400, 2000),
+                "cost_usd": cost_base * random.uniform(0.3, 1.5),
+                "energy_kwh": eng_base * random.uniform(0.3, 1.5),
+                "throughput": random.uniform(10, 100)
+            },
+            "score": random.uniform(40, 95)
+        })
+    # Inject best into hw_comp
+    hw_comp[0]["strategy"] = {"precision": "int4", "prune_ratio": 0.4, "deployment_mode": "high_performance"}
+    hw_comp[0]["hardware"] = "AMD_MI300X"
+    hw_comp[0]["simulation"].update({"latency_ms": lat_opt, "cost_usd": cost_opt, "energy_kwh": eng_opt, "memory_mb": 520.0})
+    hw_comp[0]["score"] = 96.5
+
+    return {
+        "model_id": selected_model,
+        "status": "ready",
+        "original_request": selected_model,
+        "best_evaluation": hw_comp[0],
+        "baseline_evaluation": {
+            "simulation": {
+                "latency_ms": lat_base,
+                "memory_mb": 1800.0,
+                "cost_usd": cost_base,
+                "energy_kwh": eng_base,
+            }
+        },
+        "scoring_breakdown": {
+            "efficiency_score": 96.5,
+            "reasoning": "In Fast Demo Mode, we bypass full performance simulations. The precomputed strategy demonstrates how INT4 quantization combined with 40% structured pruning minimizes memory bandwidth bottlenecks, dropping latency by over 60% while maintaining target boundaries."
+        },
+        "hardware_comparison": hw_comp,
+        "is_demo": True
+    }
+
 # -------------------------------------------------------------------
 # STATE MANAGEMENT
 # -------------------------------------------------------------------
@@ -92,6 +169,9 @@ st.markdown("""
     <p>This system analyzes AI models and recommends optimal deployment strategies based on latency, cost, and energy efficiency across AMD hardware.</p>
 </div>
 """, unsafe_allow_html=True)
+
+if not USE_LLM:
+    st.warning("AI insights disabled (no API key found). Using heuristic explanation.")
 
 # -------------------------------------------------------------------
 # SIDEBAR CONFIGURATION
@@ -127,8 +207,8 @@ with st.sidebar:
         
         st.markdown("---")
         st.subheader("Reasoning Model")
-        use_llm = True
-        llm_mode = st.selectbox("Model Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"])
+        
+        llm_mode = st.selectbox("Model Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"], disabled=not USE_LLM)
         llm_map = {
             "Fast (llama-3.1-8b-instant)": "llama-3.1-8b-instant",
             "Balanced (llama-3.3-70b-versatile)": "llama-3.3-70b-versatile",
@@ -143,63 +223,12 @@ with st.sidebar:
 # -------------------------------------------------------------------
 if run_btn:
     if demo_mode:
-        # Realistic Synthetic Spread for Demo
-        lat_base = random.uniform(150, 300)
-        cost_base = random.uniform(0.0004, 0.0008)
-        eng_base = random.uniform(0.00004, 0.00008)
-        
-        lat_opt = lat_base * random.uniform(0.3, 0.6)
-        cost_opt = cost_base * random.uniform(0.3, 0.6)
-        eng_opt = eng_base * random.uniform(0.3, 0.6)
-        
-        hw_comp = []
-        for i in range(20):
-            hw_comp.append({
-                "strategy": {"precision": random.choice(["fp32", "fp16", "int8", "int4"]), "prune_ratio": random.choice([0.0, 0.2, 0.4, 0.6]), "deployment_mode": "balanced"},
-                "hardware": random.choice(["AMD_MI250", "AMD_MI300X"]),
-                "simulation": {
-                    "latency_ms": lat_base * random.uniform(0.3, 1.5),
-                    "memory_mb": random.uniform(400, 2000),
-                    "cost_usd": cost_base * random.uniform(0.3, 1.5),
-                    "energy_kwh": eng_base * random.uniform(0.3, 1.5),
-                    "throughput": random.uniform(10, 100)
-                },
-                "score": random.uniform(40, 95)
-            })
-        # Inject best into hw_comp
-        hw_comp[0]["strategy"] = {"precision": "int4", "prune_ratio": 0.4, "deployment_mode": "high_performance"}
-        hw_comp[0]["hardware"] = "AMD_MI300X"
-        hw_comp[0]["simulation"].update({"latency_ms": lat_opt, "cost_usd": cost_opt, "energy_kwh": eng_opt, "memory_mb": 520.0})
-        hw_comp[0]["score"] = 96.5
-
-        st.session_state["results"] = {
-            "model_id": selected_model,
-            "status": "ready",
-            "original_request": selected_model,
-            "best_evaluation": hw_comp[0],
-            "baseline_evaluation": {
-                "simulation": {
-                    "latency_ms": lat_base,
-                    "memory_mb": 1800.0,
-                    "cost_usd": cost_base,
-                    "energy_kwh": eng_base,
-                }
-            },
-            "scoring_breakdown": {
-                "efficiency_score": 96.5,
-                "reasoning": "In Fast Demo Mode, we bypass full performance simulations. The precomputed strategy demonstrates how INT4 quantization combined with 40% structured pruning minimizes memory bandwidth bottlenecks, dropping latency by over 60% while maintaining target boundaries."
-            },
-            "hardware_comparison": hw_comp,
-            "is_demo": True
-        }
+        st.session_state["results"] = generate_demo_results(selected_model, selected_hardware)
         st.session_state["constraints"] = {"max_latency": max_lat, "max_cost": max_cost}
     else:
         with st.spinner("Loading model configuration and executing Multi-Objective Optimization..."):
             try:
-                load_dotenv()
-                hf_token = os.getenv("HF_TOKEN")
-                
-                config, actual_m_id, status = cached_config_loader(selected_model, hf_token)
+                config, actual_m_id, status = cached_config_loader(selected_model, HF_TOKEN)
                 
                 pipeline = DeploymentPipeline()
                 weights = {
@@ -218,18 +247,25 @@ if run_btn:
                     weights=weights,
                     constraints=constraints,
                     llm_mode=actual_llm_mode,
-                    use_llm_reasoning=use_llm,
+                    use_llm_reasoning=USE_LLM,
                     config=config,
                     status=status,
                     actual_model_id=actual_m_id
                 )
+                
+                # Check for explicit failure
+                if "error" in results:
+                    raise Exception(results["error"])
+                    
                 results["is_demo"] = False
                 st.session_state["results"] = results
                 st.session_state["constraints"] = constraints
-            except AssertionError as ae:
-                st.error(f"Validation Guard: {ae}")
-            except Exception:
-                st.error("Pipeline encountered an issue during execution. Please check hardware limits or model compatibility.")
+                
+            except Exception as e:
+                st.error("System failed gracefully. Showing demo results.")
+                logger.error(f"Execution Error: {e}")
+                st.session_state["results"] = generate_demo_results(selected_model, selected_hardware)
+                st.session_state["constraints"] = {"max_latency": max_lat, "max_cost": max_cost}
 
 # -------------------------------------------------------------------
 # RESULTS DASHBOARD
@@ -238,10 +274,6 @@ res = st.session_state.get("results")
 cons = st.session_state.get("constraints", {})
 
 if res:
-    if "error" in res:
-        st.error("Pipeline execution halted. Please adjust constraints and try again.")
-        st.stop()
-        
     best_eval = res.get("best_evaluation", {})
     baseline_eval = res.get("baseline_evaluation", {})
     sim = best_eval.get("simulation", {})

@@ -4,4 +4,5 @@ torch
 plotly
 pandas
 numpy
+python-dotenv
 groq

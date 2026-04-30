@@ -1,7 +1,6 @@
 import os
 import logging
-from transformers import AutoConfig
-from dotenv import load_dotenv
+import streamlit as st
 
 # Suppress loud HTTP logs
 logging.getLogger("transformers").setLevel(logging.ERROR)
@@ -18,6 +17,7 @@ def safe_load_config(model_id, hf_token=None):
     """
     Centralized loader function for fast, safe model loading.
     """
+    from transformers import AutoConfig
     try:
         config = AutoConfig.from_pretrained(model_id, token=hf_token)
         return config, model_id, "ready"
@@ -52,8 +52,13 @@ class ModelProfiler:
             self.model_id = actual_model_id or model_id
             self.status = status
         else:
-            load_dotenv()
             hf_token = os.getenv("HF_TOKEN")
+            if not hf_token:
+                try:
+                    hf_token = st.secrets.get("HF_TOKEN", None)
+                except Exception:
+                    pass
+                    
             cfg, m_id, stat = safe_load_config(model_id, hf_token)
             self.config = cfg
             self.model_id = m_id
