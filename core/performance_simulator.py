@@ -22,9 +22,11 @@ class PerformanceSimulator:
             if isinstance(strategy, dict):
                 precision = strategy.get("precision", "fp16")
                 prune_ratio = strategy.get("prune_ratio", 0.0)
+                mode = strategy.get("deployment_mode", "balanced")
             else:
                 precision = getattr(strategy, "precision", "fp16")
                 prune_ratio = getattr(strategy, "prune_ratio", 0.0)
+                mode = getattr(strategy, "deployment_mode", "balanced")
                 
             # Extract hardware metrics
             if isinstance(hardware, dict):
@@ -39,6 +41,14 @@ class PerformanceSimulator:
                 cost_per_hour = getattr(hardware, "cost_per_hour", 3.0)
                 compute_score = getattr(hardware, "fp16_tflops", getattr(hardware, "compute_score", 100.0))
                 bandwidth_gbps = getattr(hardware, "bandwidth_gbps", 1000.0)
+
+            # Apply Deployment Mode modifiers
+            if mode == "high_performance":
+                power_watts *= 1.2
+                compute_score *= 1.1
+            elif mode == "low_power":
+                power_watts *= 0.6
+                compute_score *= 0.7
 
             # Workload sizing
             if workload_type == "chat_inference":
@@ -72,7 +82,13 @@ class PerformanceSimulator:
             # TRUE ROOFLINE MODEL MATH
             # ---------------------------------------------------------
             bandwidth_bytes_per_sec = bandwidth_gbps * 1e9
-            compute_flops_per_sec = compute_score * 1e12
+            
+            # Hardware TOPS typically scale with reduced precision
+            if precision == "fp32": compute_flops_per_sec = (compute_score / 2.0) * 1e12
+            elif precision == "int8": compute_flops_per_sec = (compute_score * 2.0) * 1e12
+            elif precision == "int4": compute_flops_per_sec = (compute_score * 4.0) * 1e12
+            else: compute_flops_per_sec = compute_score * 1e12
+
             hardware_ridge_point = compute_flops_per_sec / bandwidth_bytes_per_sec
             
             # -- PREFILL PHASE --
@@ -115,7 +131,7 @@ class PerformanceSimulator:
             kv_cache_bytes = batch_size * (prefill_seq + decode_seq) * 2 * 2 * profile.get("hidden_size", 4096) * getattr(profile, "model_depth", 32)
             memory_mb = (model_memory_bytes + kv_cache_bytes) / (1024**2)
             
-            # Phase 2: Fix Energy Model
+            # Cost and Energy
             energy_kwh = (power_watts * total_latency_sec) / 3600000.0
             cost_usd = cost_per_hour * (total_latency_sec / 3600.0)
             

@@ -87,18 +87,13 @@ Slingshot-AI produces a rich evaluation dictionary. Key outputs include:
 
 ---
 
-## 8. Screenshots
-*(Placeholder for UI Dashboard Screenshots: Executive Decision Block, True Roofline Curve, Strategy Leaderboard)*
-
----
-
-## 9. Limitations
+## 8. Limitations
 - **Accuracy Penalty Math**: Currently, the accuracy penalty from pruning/quantization is approximated via a static penalty step-function. Future iterations require mapping against real-world perplexity degradation datasets.
 - **Static Batching**: The simulator currently defaults to static batch definitions. Dynamic Continuous Batching (vLLM style) alters arithmetic intensity over time and is not fully modeled.
 
 ---
 
-## 10. Future Work
+## 9. Future Work
 - Integrate direct PyTorch benchmarking to validate simulator estimations automatically.
 - Support multi-node deployment strategies (Tensor Parallelism & Pipeline Parallelism overheads).
 - Expand hardware support to upcoming generation accelerators.

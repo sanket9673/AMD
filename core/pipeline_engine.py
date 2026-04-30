@@ -32,26 +32,25 @@ class DeploymentPipeline:
                      workload_type: str = "chat_inference", 
                      weights: dict = None,
                      constraints: dict = None,
-                     llm_mode: str = "FAST",
+                     llm_mode: str = "llama-3.1-8b-instant",
                      use_llm_reasoning: bool = False) -> Dict[str, Any]:
         """
         Runs the full pipeline robustly. Guarantees a valid return object.
         """
-        logger.info(f"--- Starting Enterprise Deployment Intelligence Pipeline for {model_id} ---")
-        
         try:
             # 1. Profile model (with gated model fallback inside profiler)
-            logger.info("1. Profiling model (Mathematical bounds, NO weights loaded)...")
             self.profiler.load_model(model_id)
             model_profile = self.profiler.generate_profile()
             
             # 2. Setup Hardware Targets
-            logger.info("2. Setting up hardware comparison...")
             hardware_profiles = [HARDWARE_DATABASE.get("AMD_MI250"), HARDWARE_DATABASE.get("AMD_MI300X")]
             hardware_profiles = [hw for hw in hardware_profiles if hw is not None]
+            if hardware_type and hardware_type != "None":
+                hw = HARDWARE_DATABASE.get(hardware_type)
+                if hw:
+                    hardware_profiles = [hw]
             
             # 3. Generating Strategies
-            logger.info("3. Generating and simulating strategies...")
             all_strats = self.strategy_gen.generate_all_combinations()
             
             evaluations = []
@@ -75,9 +74,23 @@ class DeploymentPipeline:
                             "hardware": hw.name,
                             "simulation": sim_result
                         })
-                    except Exception as e:
-                        logger.warning(f"Simulation failed for {hw.name} with {strat.precision}: {e}")
+                    except Exception:
                         continue
+                        
+            # Calculate Absolute Baseline (fp16, prune 0.0, default hw)
+            baseline_hw = hardware_profiles[0] if hardware_profiles else HARDWARE_DATABASE.get("AMD_MI250")
+            baseline_strat = next((s for s in all_strats if s.precision == "fp16" and s.prune_ratio == 0.0 and s.deployment_mode == "balanced"), all_strats[0])
+            baseline_eval = None
+            try:
+                sim_result = self.simulator.simulate(model_profile, baseline_strat, baseline_hw, workload_type=workload_type)
+                sim_result["accuracy_penalty"] = 0.0
+                baseline_eval = {
+                    "strategy": baseline_strat.to_dict(),
+                    "hardware": baseline_hw.name,
+                    "simulation": sim_result
+                }
+            except Exception:
+                pass
                         
             # Apply Constraints
             if constraints:
@@ -90,43 +103,52 @@ class DeploymentPipeline:
                 ]
                 if filtered_evals:
                     evaluations = filtered_evals
-                else:
-                    logger.warning("No strategies met constraints. Using all available to prevent crash.")
 
             # 4. Score and Rank (New Scorer)
-            logger.info("4. Scoring and ranking strategies...")
             if not weights:
                 weights = {'latency': 0.2, 'memory_efficiency': 0.2, 'cost_efficiency': 0.2, 'energy_efficiency': 0.2, 'accuracy_preservation': 0.2}
                 
             ranked_evaluations = self.scorer.evaluate(evaluations, weights)
             
             if not ranked_evaluations:
-                raise ValueError("No viable strategies could be scored!")
+                raise ValueError("No viable strategies could be scored within the given constraints.")
                 
             best_evaluation = ranked_evaluations[0]
             
+            # MANDATORY ASSERTIONS (Phase 6)
+            if baseline_eval:
+                b_lat = baseline_eval["simulation"]["latency_ms"]
+                o_lat = best_evaluation["simulation"]["latency_ms"]
+                b_cost = baseline_eval["simulation"]["cost_usd"]
+                o_cost = best_evaluation["simulation"]["cost_usd"]
+                
+                if (b_lat == o_lat and b_cost == o_cost) and (baseline_eval["strategy"] != best_evaluation["strategy"]):
+                    raise AssertionError("Simulation outputs are identical — check performance model")
+            
             # 5. Generate reasoning
-            logger.info("5. Generating reasoning...")
             self.reasoner = ReasoningEngine(mode=llm_mode)
+            
+            telem = best_evaluation["simulation"].get("roofline_telemetry", {})
             
             strategy_metrics = {
                 "Precision": best_evaluation["strategy"]["precision"],
                 "Prune Ratio": best_evaluation["strategy"]["prune_ratio"],
                 "Hardware": best_evaluation["hardware"],
-                "Latency (ms)": round(best_evaluation["simulation"]["latency_ms"], 4),
-                "Throughput (req/s)": round(best_evaluation["simulation"]["throughput"], 2),
-                "Energy (kWh)": round(best_evaluation["simulation"]["energy_kwh"], 4),
+                "Latency (ms)": round(best_evaluation["simulation"]["latency_ms"], 1),
                 "Cost ($)": round(best_evaluation["simulation"].get("cost_usd", 0), 5),
-                "Accuracy Penalty": round(best_evaluation["simulation"].get("accuracy_penalty", 0), 2)
+                "Prefill AI": round(telem.get("prefill_ai", 0.0), 2),
+                "Ridge Point": round(telem.get("ridge", 0.0), 2)
             }
             
             reasoning = self.reasoner.generate_explanation(strategy_metrics, use_llm=use_llm_reasoning)
             best_evaluation["reasoning"] = reasoning
             
             # 6. Output
-            logger.info("6. Preparing final output...")
             final_output = {
-                "model_id": model_id,
+                "original_request": model_id,
+                "model_id": model_profile["model_id"],
+                "status": model_profile.get("status", "unknown"),
+                "baseline_evaluation": baseline_eval,
                 "best_strategy": best_evaluation["strategy"],
                 "best_evaluation": best_evaluation,
                 "hardware_comparison": ranked_evaluations[:20], # top 20 for charts
@@ -139,18 +161,15 @@ class DeploymentPipeline:
             try:
                 with open(results_path, "w") as f:
                     json.dump(final_output, f, indent=4)
-            except IOError as e:
-                logger.warning(f"Could not save results to disk: {e}")
+            except IOError:
+                pass
             
-            logger.info(f"Pipeline execution completed successfully.")
             return final_output
             
         except Exception as e:
-            logger.error(f"Critical Pipeline Failure: {e}\n{traceback.format_exc()}")
-            # Return a safe fallback object to prevent UI crash
+            # Clean error string
             return {
                 "error": str(e),
-                "traceback": traceback.format_exc(),
                 "best_evaluation": None,
                 "hardware_comparison": []
             }

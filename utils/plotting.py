@@ -37,14 +37,30 @@ def create_pareto_frontier(evaluations: List[Dict[str, Any]]) -> go.Figure:
         data.append({
             "Latency (ms)": ev['simulation'].get('latency_ms', 0),
             "Cost ($)": ev['simulation'].get('cost_usd', 0),
-            "Strategy": f"{ev['hardware']} - {ev['strategy'].get('precision', '')}",
+            "Energy (kWh)": ev['simulation'].get('energy_kwh', 0),
+            "Strategy": f"{ev['hardware']} - {ev['strategy'].get('precision', '')} p={ev['strategy'].get('prune_ratio', 0)}",
             "Score": ev.get('score', 0)
         })
     df = pd.DataFrame(data)
     if df.empty:
         return go.Figure()
-    fig = px.scatter(df, x="Latency (ms)", y="Cost ($)", color="Score", hover_name="Strategy", 
-                     title="Pareto Frontier (Latency vs Cost)", color_continuous_scale="Viridis")
+        
+    best_strategy = df.loc[df['Score'].idxmax()]
+        
+    fig = px.scatter(df, x="Latency (ms)", y="Cost ($)", color="Energy (kWh)", hover_name="Strategy", 
+                     title="Strategy Tradeoff (Latency vs Cost)", color_continuous_scale="Viridis")
+                     
+    # Highlight best
+    fig.add_trace(go.Scatter(
+        x=[best_strategy["Latency (ms)"]],
+        y=[best_strategy["Cost ($)"]],
+        mode='markers',
+        marker=dict(size=16, symbol='star', color='red', line=dict(width=2, color='white')),
+        name="Selected Strategy",
+        hoverinfo='text',
+        hovertext=f"Selected: {best_strategy['Strategy']}"
+    ))
+    
     fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#e2e8f0'))
     return fig
 
@@ -104,23 +120,28 @@ def create_roofline_plot(evaluations: List[Dict[str, Any]]) -> go.Figure:
     fig.add_trace(go.Scatter(
         x=[telem['prefill_ai'], telem['decode_ai']],
         y=[telem['prefill_perf'], telem['decode_perf']],
-        mode='markers',
-        marker=dict(size=14, symbol='star', color='red', line=dict(width=2, color='white')),
+        mode='markers+text',
+        text=["Prefill", "Decode"],
+        textposition="top center",
+        marker=dict(size=16, symbol='star', color='red', line=dict(width=2, color='white')),
         name="Selected Strategy",
         hoverinfo='text',
         hovertext=[f"Prefill<br>AI: {telem['prefill_ai']:.2f}<br>Perf: {telem['prefill_perf']:.2e}",
                    f"Decode<br>AI: {telem['decode_ai']:.2f}<br>Perf: {telem['decode_perf']:.2e}"]
     ))
     
-    # Other strategies
+    # Other strategies with slight noise to prevent perfect overlap if needed
     other_x = []
     other_y = []
     for ev in evaluations[1:20]:
         if ev['hardware'] != best_eval['hardware']: continue
         t = ev['simulation'].get('roofline_telemetry')
         if not t: continue
-        other_x.extend([t['prefill_ai'], t['decode_ai']])
-        other_y.extend([t['prefill_perf'], t['decode_perf']])
+        # Add tiny jitter so distinct strategies are visible
+        jx = np.random.uniform(-0.02, 0.02) * t['prefill_ai']
+        jy = np.random.uniform(-0.02, 0.02) * t['prefill_perf']
+        other_x.extend([t['prefill_ai']+jx, t['decode_ai']*(1+np.random.uniform(-0.02, 0.02))])
+        other_y.extend([t['prefill_perf']+jy, t['decode_perf']*(1+np.random.uniform(-0.02, 0.02))])
         
     if other_x:
         fig.add_trace(go.Scatter(
@@ -130,6 +151,18 @@ def create_roofline_plot(evaluations: List[Dict[str, Any]]) -> go.Figure:
             name="Other Strategies",
             hoverinfo='none'
         ))
+
+    # Add Annotation for Ridge Point
+    fig.add_annotation(
+        x=np.log10(ridge),
+        y=np.log10(compute),
+        text="Ridge Point",
+        showarrow=True,
+        arrowhead=1,
+        ax=-40,
+        ay=-40,
+        font=dict(color="white")
+    )
 
     fig.update_layout(
         title="Roofline Model: Performance vs Arithmetic Intensity",

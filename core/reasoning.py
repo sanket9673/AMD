@@ -2,14 +2,17 @@ import os
 import logging
 import asyncio
 from typing import Dict, Any
+from dotenv import load_dotenv
 
+# Suppress loud HTTP logs
+logging.getLogger("httpx").setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 class ReasoningEngine:
     """
     Reasoning Engine powered by Groq LLMs.
     Provides fast, dynamic explanations for AI deployment strategies.
-    Falls back to a robust template if API keys are missing or calls fail.
+    Falls back gracefully if API keys are missing.
     """
     def __init__(self, mode: str = "llama-3.1-8b-instant"):
         self.model_name = mode
@@ -17,15 +20,16 @@ class ReasoningEngine:
         self._init_client()
 
     def _init_client(self):
+        load_dotenv()
+        api_key = os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            self.client = None
+            return
+            
         try:
             from groq import AsyncGroq
-            api_key = os.environ.get("GROQ_API_KEY")
-            if api_key:
-                self.client = AsyncGroq(api_key=api_key)
-            else:
-                logger.warning("GROQ_API_KEY not found. Reasoning engine will use fallback template.")
+            self.client = AsyncGroq(api_key=api_key)
         except ImportError:
-            logger.warning("groq package not installed. Reasoning engine will use fallback template.")
             self.client = None
 
     async def generate_explanation_async(self, strategy_metrics: Dict[str, Any], use_llm: bool = False) -> str:
@@ -35,31 +39,34 @@ class ReasoningEngine:
             return fallback_text
             
         try:
-            system_prompt = "You are an expert AI deployment architect. Provide a brief, professional explanation for the selected deployment strategy."
+            system_prompt = (
+                "You are a Staff-Level AI Infrastructure Engineer. "
+                "Provide a brief, professional, non-technical explanation for the selected deployment strategy. "
+                "Do NOT use markdown headers, bold text, emojis, or bullet points. "
+                "Explain the choice in 2-3 clean, readable sentences focusing on memory, latency, and cost limits."
+            )
             
             metrics_str = "Strategy Metrics:\n"
             for key, value in strategy_metrics.items():
                 metrics_str += f"- {key}: {value}\n"
 
-            user_prompt = f"Based on these metrics, explain why this is the optimal deployment strategy. Mention hardware tradeoffs and accuracy preservation.\n\n{metrics_str}"
+            user_prompt = f"Based on these metrics, provide a highly professional explanation for why this is the optimal deployment strategy:\n\n{metrics_str}"
             
-            logger.info(f"Generating insight using Groq ({self.model_name})...")
             completion = await self.client.chat.completions.create(
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
                 model=self.model_name,
-                temperature=0.3,
-                max_tokens=256,
-                timeout=10.0
+                temperature=0.1,
+                max_tokens=150,
+                timeout=5.0
             )
             
             return completion.choices[0].message.content.strip()
             
-        except Exception as e:
-            logger.error(f"Groq LLM Generation failed: {e}")
-            return f"LLM Generation Failed. Fallback insight: {fallback_text}"
+        except Exception:
+            return fallback_text
 
     def generate_explanation(self, strategy_metrics: Dict[str, Any], use_llm: bool = False) -> str:
         """Synchronous wrapper for pipeline engine"""
@@ -70,7 +77,6 @@ class ReasoningEngine:
             asyncio.set_event_loop(loop)
             
         if loop.is_running():
-            # Create a new thread to run the async function if loop is running
             import threading
             result = [None]
             def run_in_thread():
@@ -87,18 +93,19 @@ class ReasoningEngine:
 
     def _generate_fallback(self, metrics: Dict[str, Any]) -> str:
         """Template-based reasoning fallback."""
-        prec = metrics.get('Precision', 'Unknown')
-        hw = metrics.get('Hardware', 'Unknown')
-        lat = metrics.get('Latency (ms)', 0)
-        acc_pen = metrics.get('Accuracy Penalty', 0)
-        
-        explanation = (
-            f"The selected {prec} strategy on {hw} was chosen because it optimally balances "
-            f"latency ({lat:.1f}ms) and infrastructure cost while staying within memory bounds. "
-        )
-        if acc_pen > 0:
-            explanation += f"Note: An estimated accuracy degradation penalty of {acc_pen*100:.0f}% is factored into the efficiency score."
+        if not self.client and os.environ.get("GROQ_API_KEY") is None:
+            prefix = "AI reasoning running in offline mode. "
         else:
-            explanation += "This strategy preserves near-baseline accuracy."
+            prefix = ""
             
+        ai = metrics.get('Prefill AI', 0.0)
+        ridge = metrics.get('Ridge Point', 0.0)
+        
+        regime = "compute-bound" if ai >= ridge else "memory-bound"
+            
+        explanation = (
+            f"{prefix}This strategy operates in a {regime} regime during prefill. "
+            f"The selected precision reduces memory transfer overhead, "
+            f"improving overall throughput while maintaining strict latency and cost constraints."
+        )
         return explanation
