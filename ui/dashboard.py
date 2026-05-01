@@ -41,7 +41,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Production Safe ENV Handling (Phase 3)
+# Production Safe ENV Handling
 try:
     st_secrets_hf = st.secrets.get("HF_TOKEN", None)
 except Exception:
@@ -55,7 +55,7 @@ except Exception:
 HF_TOKEN = os.getenv("HF_TOKEN") or st_secrets_hf
 GROQ_API_KEY = os.getenv("GROQ_API_KEY") or st_secrets_groq
 
-# Handle missing API Keys Safely (Phase 4)
+# Handle missing API Keys Safely
 if GROQ_API_KEY is None:
     USE_LLM = False
 else:
@@ -78,10 +78,21 @@ st.markdown("""
     h1, h2, h3, h4, h5, h6 { color: #f8fafc; font-weight: 600; }
     .stSelectbox label, .stSlider label, .stNumberInput label, .stCheckbox label { color: #94a3b8 !important; }
     
-    .stButton>button {
-        background: #3b82f6; color: white; border: none; border-radius: 6px; padding: 10px; font-weight: 600; width: 100%; transition: all 0.2s;
+    div.stButton > button {
+        background-color: #FF6B00 !important;
+        color: white !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        padding: 14px !important;
+        border-radius: 10px !important;
+        border: none !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
     }
-    .stButton>button:hover { background: #2563eb; transform: translateY(-1px); }
+    div.stButton > button:hover {
+        background-color: #e65c00 !important;
+        transform: scale(1.03) !important;
+    }
     
     .header-box { background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #334155; }
     .header-box h2 { margin-top: 0; color: #38bdf8; font-size: 1.5rem; }
@@ -159,6 +170,9 @@ def generate_demo_results(selected_model, selected_hardware):
 if "results" not in st.session_state:
     st.session_state["results"] = None
 
+if "run_trigger" not in st.session_state:
+    st.session_state["run_trigger"] = False
+
 # -------------------------------------------------------------------
 # HEADER
 # -------------------------------------------------------------------
@@ -170,63 +184,75 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+st.info("Run optimization to generate deployment recommendations ↓")
+
 if not USE_LLM:
     st.warning("AI insights disabled (no API key found). Using heuristic explanation.")
 
 # -------------------------------------------------------------------
-# SIDEBAR CONFIGURATION
+# CTA SECTION (Top)
 # -------------------------------------------------------------------
-with st.sidebar:
-    st.header("Configuration")
+st.markdown("### Start Optimization")
+st.caption("Analyze model → simulate strategies → get best deployment plan")
+
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    run_clicked = st.button("🚀 Run Deployment Optimization", use_container_width=True)
+
+# Demo Mode toggle just below CTA
+c_left, c_mid, c_right = st.columns([1,2,1])
+with c_mid:
+    demo_mode = st.checkbox("⚡ Fast Demo Mode (Instant Results)", value=True)
+
+st.markdown("---")
+
+# -------------------------------------------------------------------
+# INPUT CONFIGURATION (Main Area)
+# -------------------------------------------------------------------
+with st.expander("⚙️ System Configuration (Inputs)", expanded=True):
+    col_a, col_b, col_c = st.columns(3)
     
-    demo_mode = st.checkbox("Fast Demo Mode", value=True)
-    
-    with st.form("pipeline_form"):
+    with col_a:
         models = [
             "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
             "microsoft/phi-2",
             "google/gemma-2b"
         ]
         selected_model = st.selectbox("Model Architecture", models)
-        
         selected_hardware = st.selectbox("Hardware Bias (Optional)", ["None", "AMD_MI250", "AMD_MI300X"])
         selected_workload = st.selectbox("Workload", ["chat_inference", "batch_inference", "fine_tuning"])
         
-        st.markdown("---")
-        st.subheader("Constraints")
+    with col_b:
         max_lat = st.number_input("Max Latency (ms)", value=5000.0, min_value=0.1)
         max_cost = st.number_input("Max Cost/Req ($)", value=0.01, min_value=0.00001, format="%.5f")
         
-        st.markdown("---")
-        st.subheader("Objective Weights")
-        w_lat = st.slider("Latency", 0, 100, 25)
-        w_mem = st.slider("Memory", 0, 100, 20)
-        w_cost = st.slider("Cost", 0, 100, 20)
-        w_eng = st.slider("Energy", 0, 100, 15)
-        w_acc = st.slider("Accuracy", 0, 100, 20)
-        
-        st.markdown("---")
-        st.subheader("Reasoning Model")
-        
-        llm_mode = st.selectbox("Model Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"], disabled=not USE_LLM)
+        llm_mode = st.selectbox("Reasoning Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"], disabled=not USE_LLM)
         llm_map = {
             "Fast (llama-3.1-8b-instant)": "llama-3.1-8b-instant",
             "Balanced (llama-3.3-70b-versatile)": "llama-3.3-70b-versatile",
             "Premium (openai/gpt-oss-120b)": "openai/gpt-oss-120b"
         }
         actual_llm_mode = llm_map.get(llm_mode, "llama-3.1-8b-instant")
+        
+    with col_c:
+        w_lat = st.slider("Weight: Latency", 0, 100, 25)
+        w_mem = st.slider("Weight: Memory", 0, 100, 20)
+        w_cost = st.slider("Weight: Cost", 0, 100, 20)
+        w_eng = st.slider("Weight: Energy", 0, 100, 15)
+        w_acc = st.slider("Weight: Accuracy", 0, 100, 20)
 
-        run_btn = st.form_submit_button("Run Optimization")
+st.markdown("---")
 
 # -------------------------------------------------------------------
 # PIPELINE EXECUTION LOGIC
 # -------------------------------------------------------------------
-if run_btn:
-    if demo_mode:
-        st.session_state["results"] = generate_demo_results(selected_model, selected_hardware)
-        st.session_state["constraints"] = {"max_latency": max_lat, "max_cost": max_cost}
-    else:
-        with st.spinner("Loading model configuration and executing Multi-Objective Optimization..."):
+if run_clicked:
+    st.session_state["run_trigger"] = True
+    with st.spinner("Running deployment optimization..."):
+        if demo_mode:
+            st.session_state["results"] = generate_demo_results(selected_model, selected_hardware)
+            st.session_state["constraints"] = {"max_latency": max_lat, "max_cost": max_cost}
+        else:
             try:
                 config, actual_m_id, status = cached_config_loader(selected_model, HF_TOKEN)
                 
@@ -253,7 +279,6 @@ if run_btn:
                     actual_model_id=actual_m_id
                 )
                 
-                # Check for explicit failure
                 if "error" in results:
                     raise Exception(results["error"])
                     
@@ -271,9 +296,36 @@ if run_btn:
 # RESULTS DASHBOARD
 # -------------------------------------------------------------------
 res = st.session_state.get("results")
-cons = st.session_state.get("constraints", {})
 
 if res:
+    # Phase 1: Add Result Anchor
+    st.markdown('<div id="results-section"></div>', unsafe_allow_html=True)
+    st.markdown("## 📊 Optimization Results")
+    
+    # Phase 3: "Result Ready" feedback + scroll implementation
+    if st.session_state.get("run_trigger"):
+        st.success("Optimization completed. Scroll down to view results.")
+        # Phase 2: Auto Scroll
+        scroll_script = """
+        <script>
+            // Ensure DOM is fully rendered before scrolling
+            setTimeout(function() {
+                const element = window.parent.document.getElementById("results-section");
+                if (element) {
+                    window.parent.scrollTo({
+                        top: element.offsetTop - 50,
+                        behavior: "smooth"
+                    });
+                }
+            }, 100);
+        </script>
+        """
+        import streamlit.components.v1 as components
+        components.html(scroll_script, height=0)
+        st.session_state["run_trigger"] = False
+        
+    st.divider()
+
     best_eval = res.get("best_evaluation", {})
     baseline_eval = res.get("baseline_evaluation", {})
     sim = best_eval.get("simulation", {})
@@ -298,40 +350,40 @@ if res:
     original_req = res.get("original_request", "Unknown")
     model_name_display = res.get("model_id", "Unknown")
     
-    if is_demo:
-        st.success(f"Fast Demo Mode loaded successfully: {model_name_display}")
-    elif status == "ready":
-        st.success(f"Model loaded successfully: {model_name_display}")
-    elif status == "fallback":
-        st.warning(f"Using compatible model for simulation: {model_name_display} (Original requested was restricted)")
-    else:
-        st.info(f"Model loaded: {model_name_display}")
+    # Phase 4 & 5: Highlight Result Section & Structured Output
+    with st.container():
+        st.markdown("### Recommended Configuration")
+        strat = best_eval.get("strategy", {})
+        hw_name = best_eval.get("hardware", "Unknown")
+        precision = strat.get("precision", "Unknown").upper()
+        pruning = strat.get("prune_ratio", 0) * 100
+        mode = strat.get("deployment_mode", "Balanced").capitalize()
+        
+        st.markdown(f"""
+        **Precision:** {precision}  
+        **Pruning:** {pruning:.0f}%  
+        **Hardware:** {hw_name}  
+        **Deployment Mode:** {mode}
+        """)
+        
+    st.divider()
 
-    # 1. KPI SECTION (EXECUTIVE VIEW)
+    # Phase 7: Add "Key Impact" Summary
+    st.markdown("### Impact Summary")
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("Latency", f"{latency:.1f} ms", delta=f"-{i_lat:.1f}%", delta_color="inverse")
-    with c2: st.metric("Cost / Req", f"${cost:.5f}", delta=f"-{i_cost:.1f}%", delta_color="inverse")
-    with c3: st.metric("Energy", f"{energy_kwh*1000:.3f} mWh", delta=f"-{i_eng:.1f}%", delta_color="inverse")
-    with c4: st.metric("Efficiency Score", f"{eff_score:.1f}/100")
+    with c1: c1.metric("Latency Reduction", f"{i_lat:.1f}%")
+    with c2: c2.metric("Cost Reduction", f"{i_cost:.1f}%")
+    with c3: c3.metric("Energy Reduction", f"{i_eng:.1f}%")
+    with c4: c4.metric("Efficiency Score", f"{eff_score:.1f}/100")
+    
+    st.divider()
 
-    # 2. RECOMMENDED STRATEGY
-    strat = best_eval.get("strategy", {})
-    hw_name = best_eval.get("hardware", "Unknown")
-    precision = strat.get("precision", "Unknown").upper()
-    pruning = strat.get("prune_ratio", 0) * 100
-    
-    st.markdown(f"""
-    <div class="decision-box">
-        <h3>Optimized Deployment Strategy</h3>
-        <p><b>Hardware:</b> {hw_name} | <b>Precision:</b> {precision} | <b>Pruning:</b> {pruning:.0f}%</p>
-        <p>This configuration reduces latency and cost while maintaining acceptable accuracy for production inference workloads.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
+    # Phase 6: Add Reasoning Panel
+    st.markdown("### Why this strategy was selected")
     reasoning_text = score_brk.get("reasoning", "This strategy operates efficiently within the desired constraints.")
-    st.markdown(f"<div class='insight-card'><div class='insight-text'>{reasoning_text}</div></div>", unsafe_allow_html=True)
+    st.info(reasoning_text)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("---")
 
     # 3. TABS FOR VISUALIZATIONS
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -371,6 +423,3 @@ if res:
                 st.plotly_chart(create_roofline_plot(hardware_comp), use_container_width=True)
             else:
                 st.info("Roofline plot requires full runtime execution. Uncheck 'Fast Demo Mode' to view.")
-
-else:
-    st.info("System Ready. Configure parameters and run optimization to begin.")
