@@ -99,8 +99,11 @@ def create_radar_chart(hardware_comp: List[Dict[str, Any]]) -> go.Figure:
         ))
     
     fig_rad.update_layout(
-        polar=dict(radialaxis=dict(visible=True, range=[0, 100]), bgcolor='#0b0f19'),
-        showlegend=True, paper_bgcolor='#0b0f19', font=dict(color='#e2e8f0'), margin=dict(l=40, r=40, t=40, b=40)
+        polar=dict(radialaxis=dict(visible=True, range=[0, 100]), bgcolor='rgba(0,0,0,0)'),
+        showlegend=True, 
+        paper_bgcolor='rgba(0,0,0,0)', 
+        margin=dict(l=40, r=40, t=40, b=100),
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="center", x=0.5)
     )
     return fig_rad
 
@@ -253,11 +256,11 @@ def create_roofline_plot(evaluations: List[Dict[str, Any]]) -> go.Figure:
         yaxis_title="Achieved Performance (FLOPs / Sec)",
         xaxis_type="log",
         yaxis_type="log",
-        plot_bgcolor='#0b0f19', 
-        paper_bgcolor='#0b0f19', 
-        font=dict(color='#e2e8f0'),
+        plot_bgcolor='rgba(0,0,0,0)', 
+        paper_bgcolor='rgba(0,0,0,0)', 
         showlegend=True,
-        legend=dict(x=0.01, y=0.99)
+        legend=dict(orientation="h", yanchor="top", y=-0.2, xanchor="center", x=0.5),
+        margin=dict(b=100)
     )
 
     return fig
