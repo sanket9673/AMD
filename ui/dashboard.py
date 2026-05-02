@@ -75,9 +75,9 @@ def cached_config_loader(model_id, hf_token):
 # Custom Enterprise CSS
 st.markdown("""
 <style>
-    .main { background-color: #0b0f19; color: #e2e8f0; font-family: 'Inter', sans-serif; }
-    h1, h2, h3, h4, h5, h6 { color: #f8fafc; font-weight: 600; }
-    .stSelectbox label, .stSlider label, .stNumberInput label, .stCheckbox label { color: #94a3b8 !important; }
+    .main { background-color: transparent; color: var(--text-color); font-family: 'Inter', sans-serif; }
+    h1, h2, h3, h4, h5, h6 { color: var(--text-color); font-weight: 600; }
+    .stSelectbox label, .stSlider label, .stNumberInput label, .stCheckbox label { color: var(--text-color) !important; opacity: 0.85; }
     
     div.stButton > button {
         background: linear-gradient(135deg, #FF6B00 0%, #e65c00 100%) !important;
@@ -97,25 +97,25 @@ st.markdown("""
     }
     
     .header-box { 
-        background: rgba(30, 41, 59, 0.7); 
+        background: var(--secondary-background-color); 
         backdrop-filter: blur(10px);
         padding: 24px; 
         border-radius: 12px; 
         margin-bottom: 24px; 
-        border: 1px solid rgba(56, 189, 248, 0.2); 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 1px solid rgba(128, 128, 128, 0.2); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    .header-box h2 { margin-top: 0; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; }
-    .header-box p { color: #94a3b8; margin-bottom: 0; font-size: 1.1rem; }
+    .header-box h2 { margin-top: 0; background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; }
+    .header-box p { color: var(--text-color); opacity: 0.8; margin-bottom: 0; font-size: 1.1rem; }
     
-    .decision-box { background: rgba(21, 34, 56, 0.8); border: 1px solid rgba(59, 130, 246, 0.5); border-radius: 12px; padding: 24px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); }
-    .decision-box h3 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; font-size: 1.3rem; }
+    .decision-box { background: var(--secondary-background-color); border: 1px solid rgba(128, 128, 128, 0.2); border-radius: 12px; padding: 24px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); backdrop-filter: blur(10px); }
+    .decision-box h3 { color: #3b82f6; margin-top: 0; margin-bottom: 15px; font-size: 1.3rem; }
     
-    .insight-card { background: rgba(30, 41, 59, 0.6); border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(51, 65, 85, 0.5); }
-    .insight-text { color: #e2e8f0; font-size: 1.1rem; line-height: 1.6; }
+    .insight-card { background: var(--secondary-background-color); border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(128, 128, 128, 0.2); }
+    .insight-text { color: var(--text-color); font-size: 1.1rem; line-height: 1.6; }
     
-    [data-testid="stMetricValue"] { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    [data-testid="stMetricLabel"] { font-size: 1.1rem; color: #94a3b8; font-weight: 500; }
+    [data-testid="stMetricValue"] { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    [data-testid="stMetricLabel"] { font-size: 1.1rem; color: var(--text-color); opacity: 0.8; font-weight: 500; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -195,57 +195,58 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.info("Run optimization to generate deployment recommendations ↓")
+st.info("Configuration loaded successfully. Please select your target parameters below.")
 
 if not USE_LLM:
     st.warning("AI insights disabled (no API key found). Using heuristic explanation.")
 
 # -------------------------------------------------------------------
-# INPUT CONFIGURATION (Main Area)
+# SIDEBAR CONFIGURATION (Step 1)
 # -------------------------------------------------------------------
-with st.expander("⚙️ System Configuration (Inputs)", expanded=True):
-    col_a, col_b, col_c = st.columns(3)
+with st.sidebar:
+    st.markdown("## ⚙️ Step 1: System Configuration")
+    st.markdown("Configure your constraints and target model here.")
     
-    with col_a:
-        models = [
-            "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-            "microsoft/phi-2",
-            "google/gemma-2b"
-        ]
-        selected_model = st.selectbox("Model Architecture", models)
-        selected_hardware = st.selectbox("Hardware Bias (Optional)", ["None", "AMD_MI250", "AMD_MI300X"])
-        selected_workload = st.selectbox("Workload", ["chat_inference", "batch_inference", "fine_tuning"])
-        
-    with col_b:
-        max_lat = st.number_input("Max Latency (ms)", value=5000.0, min_value=0.1)
-        max_cost = st.number_input("Max Cost/Req ($)", value=0.01, min_value=0.00001, format="%.5f")
-        
-        llm_mode = st.selectbox("Reasoning Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"], disabled=not USE_LLM)
-        llm_map = {
-            "Fast (llama-3.1-8b-instant)": "llama-3.1-8b-instant",
-            "Balanced (llama-3.3-70b-versatile)": "llama-3.3-70b-versatile",
-            "Premium (openai/gpt-oss-120b)": "openai/gpt-oss-120b"
-        }
-        actual_llm_mode = llm_map.get(llm_mode, "llama-3.1-8b-instant")
-        
-    with col_c:
+    models = [
+        "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        "microsoft/phi-2",
+        "google/gemma-2b"
+    ]
+    selected_model = st.selectbox("Model Architecture", models)
+    selected_hardware = st.selectbox("Hardware Bias (Optional)", ["None", "AMD_MI250", "AMD_MI300X"])
+    selected_workload = st.selectbox("Workload", ["chat_inference", "batch_inference", "fine_tuning"])
+    
+    st.markdown("---")
+    st.markdown("### Constraints")
+    max_lat = st.number_input("Max Latency (ms)", value=5000.0, min_value=0.1)
+    max_cost = st.number_input("Max Cost/Req ($)", value=0.01, min_value=0.00001, format="%.5f")
+    
+    st.markdown("---")
+    st.markdown("### Reasoning Engine")
+    llm_mode = st.selectbox("Reasoning Tier", ["Fast (llama-3.1-8b-instant)", "Balanced (llama-3.3-70b-versatile)", "Premium (openai/gpt-oss-120b)"], disabled=not USE_LLM)
+    llm_map = {
+        "Fast (llama-3.1-8b-instant)": "llama-3.1-8b-instant",
+        "Balanced (llama-3.3-70b-versatile)": "llama-3.3-70b-versatile",
+        "Premium (openai/gpt-oss-120b)": "openai/gpt-oss-120b"
+    }
+    actual_llm_mode = llm_map.get(llm_mode, "llama-3.1-8b-instant")
+    
+    with st.expander("Advanced Optimization Weights", expanded=False):
         w_lat = st.slider("Weight: Latency", 0, 100, 25)
         w_mem = st.slider("Weight: Memory", 0, 100, 20)
         w_cost = st.slider("Weight: Cost", 0, 100, 20)
         w_eng = st.slider("Weight: Energy", 0, 100, 15)
         w_acc = st.slider("Weight: Accuracy", 0, 100, 20)
 
-st.markdown("---")
-
 # -------------------------------------------------------------------
-# CTA SECTION
+# MAIN AREA - EXECUTION (Step 2)
 # -------------------------------------------------------------------
-st.markdown("### Start Optimization")
-st.caption("Analyze model → simulate strategies → get best deployment plan")
+st.markdown("### 🚀 Step 2: Execute Optimization Engine")
+st.caption("Review your configuration in the sidebar, then run the simulation to get the best deployment plan.")
 
 col1, col2, col3 = st.columns([1,2,1])
 with col2:
-    run_clicked = st.button("🚀 Run Deployment Optimization", use_container_width=True)
+    run_clicked = st.button("Run Deployment Optimization", use_container_width=True)
 
 # Demo Mode toggle just below CTA
 c_left, c_mid, c_right = st.columns([1,2,1])
@@ -253,6 +254,8 @@ with c_mid:
     demo_mode = st.checkbox("⚡ Fast Demo Mode (Instant Results)", value=True)
 
 st.markdown("---")
+
+
 
 # -------------------------------------------------------------------
 # PIPELINE EXECUTION LOGIC
@@ -311,25 +314,26 @@ res = st.session_state.get("results")
 if res:
     # Phase 1: Add Result Anchor
     st.markdown('<div id="results-section"></div>', unsafe_allow_html=True)
-    st.markdown("## 📊 Optimization Results")
+    st.markdown("## 📊 Step 3: Optimization Results Intelligence Report")
     
     # Phase 3: "Result Ready" feedback + scroll implementation
     if st.session_state.get("run_trigger"):
         st.success("Optimization completed. Scroll down to view results.")
         # Phase 2: Auto Scroll using smooth scrollIntoView
-        scroll_script = """
+        scroll_script = f"""
         <script>
-            setTimeout(function() {
-                try {
+            // Cache buster: {random.random()}
+            setTimeout(function() {{
+                try {{
                     const doc = window.parent.document;
                     const element = doc.getElementById("results-section") || doc.querySelector('[id="results-section"]');
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                } catch (e) {
+                    if (element) {{
+                        element.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+                    }}
+                }} catch (e) {{
                     console.error("Scroll error:", e);
-                }
-            }, 300);
+                }}
+            }}, 300);
         </script>
         """
         import streamlit.components.v1 as components

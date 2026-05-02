@@ -75,10 +75,10 @@
             "energy_score": 99.88034498392011,
             "accuracy_score": 90.0,
             "memory_score": 91.409375,
-            "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
+            "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the precision of int8, which maximizes the arithmetic intensity by 4x compared to float32, thereby minimizing the Ridge Point of 345.25. Additionally, the Prune Ratio of 0.0 ensures that no unnecessary computations are performed, further optimizing the Ridge Point. The low latency of 68.4 ms and cost of $0.00012 also align with the optimal deployment strategy."
         },
         "score": 92.84496509527239,
-        "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
+        "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the precision of int8, which maximizes the arithmetic intensity by 4x compared to float32, thereby minimizing the Ridge Point of 345.25. Additionally, the Prune Ratio of 0.0 ensures that no unnecessary computations are performed, further optimizing the Ridge Point. The low latency of 68.4 ms and cost of $0.00012 also align with the optimal deployment strategy."
     },
     "hardware_comparison": [
         {
@@ -117,10 +117,10 @@
                 "energy_score": 99.88034498392011,
                 "accuracy_score": 90.0,
                 "memory_score": 91.409375,
-                "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
+                "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the precision of int8, which maximizes the arithmetic intensity by 4x compared to float32, thereby minimizing the Ridge Point of 345.25. Additionally, the Prune Ratio of 0.0 ensures that no unnecessary computations are performed, further optimizing the Ridge Point. The low latency of 68.4 ms and cost of $0.00012 also align with the optimal deployment strategy."
             },
             "score": 92.84496509527239,
-            "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
+            "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the precision of int8, which maximizes the arithmetic intensity by 4x compared to float32, thereby minimizing the Ridge Point of 345.25. Additionally, the Prune Ratio of 0.0 ensures that no unnecessary computations are performed, further optimizing the Ridge Point. The low latency of 68.4 ms and cost of $0.00012 also align with the optimal deployment strategy."
         },
         {
             "strategy": {
@@ -871,7 +871,7 @@
         "energy_score": 99.88034498392011,
         "accuracy_score": 90.0,
         "memory_score": 91.409375,
-        "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
+        "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the precision of int8, which maximizes the arithmetic intensity by 4x compared to float32, thereby minimizing the Ridge Point of 345.25. Additionally, the Prune Ratio of 0.0 ensures that no unnecessary computations are performed, further optimizing the Ridge Point. The low latency of 68.4 ms and cost of $0.00012 also align with the optimal deployment strategy."
     },
     "workload_type": "chat_inference"
 }
