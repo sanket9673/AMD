@@ -10,24 +10,24 @@
             "expected_latency_multiplier": 1.0,
             "deployment_mode": "balanced"
         },
-        "hardware": "AMD_MI300X",
+        "hardware": "AMD_MI250",
         "simulation": {
             "memory_mb": 4730.0,
-            "latency_ms": 273.02318667187745,
-            "throughput": 3.662692580032816,
-            "energy_kwh": 0.039815881389648804,
+            "latency_ms": 756.885391793128,
+            "throughput": 1.3212039905155417,
+            "energy_kwh": 0.10512297108237888,
             "hardware_fit_score": 100.0,
-            "cost_usd": 0.0004929585314908899,
+            "cost_usd": 0.0007358607975766521,
             "score": 0.0,
-            "roofline_info": "AI: 255.77 (P), 0.50 (D) | Ridge: 123.30",
+            "roofline_info": "AI: 255.77 (P), 0.50 (D) | Ridge: 59.84",
             "roofline_telemetry": {
-                "bandwidth": 5300000000000.0,
-                "compute": 653500000000000.0,
-                "ridge": 123.30188679245283,
+                "bandwidth": 3200000000000.0,
+                "compute": 191500000000000.0,
+                "ridge": 59.84375,
                 "prefill_ai": 255.77132648503797,
-                "prefill_perf": 653500000000000.0,
+                "prefill_perf": 191500000000000.0,
                 "decode_ai": 0.4999991269013905,
-                "decode_perf": 2649995372577.3696
+                "decode_perf": 1599997206084.4495
             },
             "accuracy_penalty": 0.0
         }
@@ -75,10 +75,10 @@
             "energy_score": 99.88034498392011,
             "accuracy_score": 90.0,
             "memory_score": 91.409375,
-            "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the following reasons:\n\nThe use of int8 precision minimizes memory bandwidth requirements, aligning with the Roofline model's bandwidth-bound regime for the AMD MI300X hardware. The zero prune ratio ensures that the model's computational intensity is maximized, adhering to the Roofline model's performance bound. The resulting latency of 68.4 ms and cost of $0.00012 are within the optimal range for Ridge Point and Prefill AI, respectively, further validating the strategy's optimality."
+            "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
         },
         "score": 92.84496509527239,
-        "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the following reasons:\n\nThe use of int8 precision minimizes memory bandwidth requirements, aligning with the Roofline model's bandwidth-bound regime for the AMD MI300X hardware. The zero prune ratio ensures that the model's computational intensity is maximized, adhering to the Roofline model's performance bound. The resulting latency of 68.4 ms and cost of $0.00012 are within the optimal range for Ridge Point and Prefill AI, respectively, further validating the strategy's optimality."
+        "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
     },
     "hardware_comparison": [
         {
@@ -117,10 +117,10 @@
                 "energy_score": 99.88034498392011,
                 "accuracy_score": 90.0,
                 "memory_score": 91.409375,
-                "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the following reasons:\n\nThe use of int8 precision minimizes memory bandwidth requirements, aligning with the Roofline model's bandwidth-bound regime for the AMD MI300X hardware. The zero prune ratio ensures that the model's computational intensity is maximized, adhering to the Roofline model's performance bound. The resulting latency of 68.4 ms and cost of $0.00012 are within the optimal range for Ridge Point and Prefill AI, respectively, further validating the strategy's optimality."
+                "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
             },
             "score": 92.84496509527239,
-            "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the following reasons:\n\nThe use of int8 precision minimizes memory bandwidth requirements, aligning with the Roofline model's bandwidth-bound regime for the AMD MI300X hardware. The zero prune ratio ensures that the model's computational intensity is maximized, adhering to the Roofline model's performance bound. The resulting latency of 68.4 ms and cost of $0.00012 are within the optimal range for Ridge Point and Prefill AI, respectively, further validating the strategy's optimality."
+            "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
         },
         {
             "strategy": {
@@ -871,7 +871,7 @@
         "energy_score": 99.88034498392011,
         "accuracy_score": 90.0,
         "memory_score": 91.409375,
-        "reasoning": "Based on Roofline Performance Modeling, this deployment strategy is mathematically optimal due to the following reasons:\n\nThe use of int8 precision minimizes memory bandwidth requirements, aligning with the Roofline model's bandwidth-bound regime for the AMD MI300X hardware. The zero prune ratio ensures that the model's computational intensity is maximized, adhering to the Roofline model's performance bound. The resulting latency of 68.4 ms and cost of $0.00012 are within the optimal range for Ridge Point and Prefill AI, respectively, further validating the strategy's optimality."
+        "reasoning": "Based on the provided metrics, this deployment strategy is mathematically optimal due to the optimal balance between Ridge Point and Precision. The int8 precision results in minimal memory usage, while the 0.0 prune ratio maximizes model accuracy. The AMD MI300X hardware efficiently executes the model, achieving a latency of 68.4 ms at a cost of $0.00012."
     },
     "workload_type": "chat_inference"
 }

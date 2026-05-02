@@ -79,32 +79,42 @@ st.markdown("""
     .stSelectbox label, .stSlider label, .stNumberInput label, .stCheckbox label { color: #94a3b8 !important; }
     
     div.stButton > button {
-        background-color: #FF6B00 !important;
+        background: linear-gradient(135deg, #FF6B00 0%, #e65c00 100%) !important;
         color: white !important;
         font-size: 18px !important;
-        font-weight: 600 !important;
-        padding: 14px !important;
-        border-radius: 10px !important;
+        font-weight: 700 !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
         border: none !important;
-        transition: all 0.2s ease !important;
+        box-shadow: 0 4px 14px rgba(255, 107, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
         width: 100% !important;
     }
     div.stButton > button:hover {
-        background-color: #e65c00 !important;
-        transform: scale(1.03) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(255, 107, 0, 0.6) !important;
     }
     
-    .header-box { background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #334155; }
-    .header-box h2 { margin-top: 0; color: #38bdf8; font-size: 1.5rem; }
-    .header-box p { color: #94a3b8; margin-bottom: 0; }
+    .header-box { 
+        background: rgba(30, 41, 59, 0.7); 
+        backdrop-filter: blur(10px);
+        padding: 24px; 
+        border-radius: 12px; 
+        margin-bottom: 24px; 
+        border: 1px solid rgba(56, 189, 248, 0.2); 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .header-box h2 { margin-top: 0; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.8rem; }
+    .header-box p { color: #94a3b8; margin-bottom: 0; font-size: 1.1rem; }
     
-    .decision-box { background: #152238; border: 2px solid #3b82f6; border-radius: 8px; padding: 20px; margin-top: 20px; margin-bottom: 20px; }
-    .decision-box h3 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; font-size: 1.25rem; }
+    .decision-box { background: rgba(21, 34, 56, 0.8); border: 1px solid rgba(59, 130, 246, 0.5); border-radius: 12px; padding: 24px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); }
+    .decision-box h3 { color: #38bdf8; margin-top: 0; margin-bottom: 15px; font-size: 1.3rem; }
     
-    .insight-card { background: #1e293b; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 6px; margin-top: 20px; border: 1px solid #334155; }
-    .insight-text { color: #cbd5e1; font-size: 1.05rem; line-height: 1.6; }
+    .insight-card { background: rgba(30, 41, 59, 0.6); border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid rgba(51, 65, 85, 0.5); }
+    .insight-text { color: #e2e8f0; font-size: 1.1rem; line-height: 1.6; }
     
-    [data-testid="stMetricValue"] { font-size: 2rem; font-weight: 700; color: #38bdf8; }
+    [data-testid="stMetricValue"] { font-size: 2.2rem; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    [data-testid="stMetricLabel"] { font-size: 1.1rem; color: #94a3b8; font-weight: 500; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -190,23 +200,6 @@ if not USE_LLM:
     st.warning("AI insights disabled (no API key found). Using heuristic explanation.")
 
 # -------------------------------------------------------------------
-# CTA SECTION (Top)
-# -------------------------------------------------------------------
-st.markdown("### Start Optimization")
-st.caption("Analyze model → simulate strategies → get best deployment plan")
-
-col1, col2, col3 = st.columns([1,2,1])
-with col2:
-    run_clicked = st.button("🚀 Run Deployment Optimization", use_container_width=True)
-
-# Demo Mode toggle just below CTA
-c_left, c_mid, c_right = st.columns([1,2,1])
-with c_mid:
-    demo_mode = st.checkbox("⚡ Fast Demo Mode (Instant Results)", value=True)
-
-st.markdown("---")
-
-# -------------------------------------------------------------------
 # INPUT CONFIGURATION (Main Area)
 # -------------------------------------------------------------------
 with st.expander("⚙️ System Configuration (Inputs)", expanded=True):
@@ -240,6 +233,23 @@ with st.expander("⚙️ System Configuration (Inputs)", expanded=True):
         w_cost = st.slider("Weight: Cost", 0, 100, 20)
         w_eng = st.slider("Weight: Energy", 0, 100, 15)
         w_acc = st.slider("Weight: Accuracy", 0, 100, 20)
+
+st.markdown("---")
+
+# -------------------------------------------------------------------
+# CTA SECTION
+# -------------------------------------------------------------------
+st.markdown("### Start Optimization")
+st.caption("Analyze model → simulate strategies → get best deployment plan")
+
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    run_clicked = st.button("🚀 Run Deployment Optimization", use_container_width=True)
+
+# Demo Mode toggle just below CTA
+c_left, c_mid, c_right = st.columns([1,2,1])
+with c_mid:
+    demo_mode = st.checkbox("⚡ Fast Demo Mode (Instant Results)", value=True)
 
 st.markdown("---")
 
@@ -305,19 +315,20 @@ if res:
     # Phase 3: "Result Ready" feedback + scroll implementation
     if st.session_state.get("run_trigger"):
         st.success("Optimization completed. Scroll down to view results.")
-        # Phase 2: Auto Scroll
+        # Phase 2: Auto Scroll using smooth scrollIntoView
         scroll_script = """
         <script>
-            // Ensure DOM is fully rendered before scrolling
             setTimeout(function() {
-                const element = window.parent.document.getElementById("results-section");
-                if (element) {
-                    window.parent.scrollTo({
-                        top: element.offsetTop - 50,
-                        behavior: "smooth"
-                    });
+                try {
+                    const doc = window.parent.document;
+                    const element = doc.getElementById("results-section") || doc.querySelector('[id="results-section"]');
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                } catch (e) {
+                    console.error("Scroll error:", e);
                 }
-            }, 100);
+            }, 300);
         </script>
         """
         import streamlit.components.v1 as components
