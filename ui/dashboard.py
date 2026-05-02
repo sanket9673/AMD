@@ -231,27 +231,31 @@ with st.sidebar:
     }
     actual_llm_mode = llm_map.get(llm_mode, "llama-3.1-8b-instant")
     
-    with st.expander("Advanced Optimization Weights", expanded=False):
-        w_lat = st.slider("Weight: Latency", 0, 100, 25)
-        w_mem = st.slider("Weight: Memory", 0, 100, 20)
-        w_cost = st.slider("Weight: Cost", 0, 100, 20)
-        w_eng = st.slider("Weight: Energy", 0, 100, 15)
-        w_acc = st.slider("Weight: Accuracy", 0, 100, 20)
+
 
 # -------------------------------------------------------------------
 # MAIN AREA - EXECUTION (Step 2)
 # -------------------------------------------------------------------
 st.markdown("### 🚀 Step 2: Execute Optimization Engine")
-st.caption("Review your configuration in the sidebar, then run the simulation to get the best deployment plan.")
+st.caption("Review your configuration in the sidebar, tune the optimization weights on the right, and run the simulation.")
 
-col1, col2, col3 = st.columns([1,2,1])
-with col2:
+exec_col, spacer, weight_col = st.columns([1, 0.2, 1.2])
+
+with exec_col:
+    st.markdown("<br><br>", unsafe_allow_html=True)
     run_clicked = st.button("Run Deployment Optimization", use_container_width=True)
-
-# Demo Mode toggle just below CTA
-c_left, c_mid, c_right = st.columns([1,2,1])
-with c_mid:
     demo_mode = st.checkbox("⚡ Fast Demo Mode (Instant Results)", value=True)
+
+with weight_col:
+    st.markdown("#### ⚖️ Advanced Optimization Weights")
+    w_c1, w_c2 = st.columns(2)
+    with w_c1:
+        w_lat = st.slider("Latency", 0, 100, 25)
+        w_mem = st.slider("Memory", 0, 100, 20)
+        w_cost = st.slider("Cost", 0, 100, 20)
+    with w_c2:
+        w_eng = st.slider("Energy", 0, 100, 15)
+        w_acc = st.slider("Accuracy", 0, 100, 20)
 
 st.markdown("---")
 
