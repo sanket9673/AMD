@@ -341,8 +341,27 @@ if res:
             st.markdown(f"**Memory Score:** {sb.get('memory_score', 0):.1f}/100")
 
     if st.session_state.get("run_trigger"):
-        st.success("Optimization completed. Scroll down to view results.")
-        st.markdown("[↓ Jump to Results](#results-section)", unsafe_allow_html=True)
+        st.toast("✅ Optimization Results Generated!", icon="🚀")
+        st.success("Optimization completed. Automatically scrolling to results...")
+        st.components.v1.html(
+            """
+            <script>
+                // cache buster: """ + str(random.random()) + """
+                let attempts = 0;
+                const scrollToResults = () => {
+                    const el = window.parent.document.getElementById('results-section');
+                    if (el) {
+                        el.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    } else if (attempts < 10) {
+                        attempts++;
+                        setTimeout(scrollToResults, 100);
+                    }
+                };
+                scrollToResults();
+            </script>
+            """,
+            height=0
+        )
         st.session_state["run_trigger"] = False
 
     st.divider()
